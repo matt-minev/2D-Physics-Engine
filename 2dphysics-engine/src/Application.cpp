@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "./Physics/Constants.h"
 
 bool Application::IsRunning() {
     return running;
@@ -35,7 +36,24 @@ void Application::Input() {
 // Update function (called several times per second to update objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Update() {
-    // TODO: update all objects in the scene
+    // Wait some time until the target frame time in milliseconds is reached
+    static int timePreviousFrame;
+    int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
+    if (timeToWait > 0)
+        SDL_Delay(timeToWait);
+
+    // Calculate the deltatime in seconds
+    float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.0f;
+    if (deltaTime > 0.016) { 
+        deltaTime = 0.016; 
+    }
+
+    // Set  the time of the current frame to be used in the next one
+    timePreviousFrame = SDL_GetTicks();
+
+    // Move objects as a function of deltatime
+    particle->velocity = Vec2(100.0 * deltaTime, 30.0 * deltaTime);
+    particle->position += particle->velocity;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
