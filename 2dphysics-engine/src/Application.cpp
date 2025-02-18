@@ -53,15 +53,35 @@ void Application::Update() {
     timePreviousFrame = SDL_GetTicks();
 
     // Proceed to update objects in the scene
-    particle->acceleration = Vec2(0.0, 9.8 * PIXELS_PER_METER);
+    particle->acceleration = Vec2(2.0 * PIXELS_PER_METER, 9.8 * PIXELS_PER_METER);
 
     // Intagrate the acceleration and the velocity to find the new position
     particle->velocity += particle->acceleration * deltaTime;
     particle->position += particle->velocity * deltaTime;
 
-    // TODO: 
-    // Check the particle position, and try to limit and keep the
-    // paricle inside the boundaries of the window...
+    // Hardcoded flip in velocity if the particle touches the limits of the screen window
+    // Not real physics simulation
+    if (particle->position.x - particle->radius <= 0)
+    {
+        particle->position.x = particle->radius;
+        particle->velocity.x *= -0.9;
+    }
+    else if (particle->position.x + particle->radius >= Graphics::Width())
+    {
+        particle->position.x = Graphics::Width() - particle->radius;
+        particle->velocity.x *= -0.9;
+    }
+
+    if (particle->position.y - particle->radius <= 0)
+    {
+        particle->position.y = particle->radius;
+        particle->velocity.y *= -0.9;
+    }
+    else if (particle->position.y + particle->radius >= Graphics::Height())
+    {
+        particle->position.y = Graphics::Height() - particle->radius;
+        particle->velocity.y *= -0.9;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
