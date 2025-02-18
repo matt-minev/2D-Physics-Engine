@@ -12,6 +12,7 @@ void Application::Setup() {
     running = Graphics::OpenWindow();
     
     particle = new Particle(50, 100, 1.0);
+    particle->radius = 4;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,9 +52,16 @@ void Application::Update() {
     // Set  the time of the current frame to be used in the next one
     timePreviousFrame = SDL_GetTicks();
 
-    // Move objects as a function of deltatime
-    particle->velocity = Vec2(100.0 * deltaTime, 30.0 * deltaTime);
-    particle->position += particle->velocity;
+    // Proceed to update objects in the scene
+    particle->acceleration = Vec2(0.0, 9.8 * PIXELS_PER_METER);
+
+    // Intagrate the acceleration and the velocity to find the new position
+    particle->velocity += particle->acceleration * deltaTime;
+    particle->position += particle->velocity * deltaTime;
+
+    // TODO: 
+    // Check the particle position, and try to limit and keep the
+    // paricle inside the boundaries of the window...
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,7 +69,7 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
-    Graphics::DrawFillCircle(particle->position.x, particle->position.y, 4, 0xFFFFFFFF);
+    Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
     Graphics::RenderFrame();
 }
 
