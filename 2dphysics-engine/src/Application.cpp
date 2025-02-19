@@ -52,12 +52,12 @@ void Application::Update() {
     // Set  the time of the current frame to be used in the next one
     timePreviousFrame = SDL_GetTicks();
 
-    // Proceed to update objects in the scene
-    particle->acceleration = Vec2(2.0 * PIXELS_PER_METER, 9.8 * PIXELS_PER_METER);
+    // Apply a "wind" force to my particle
+    Vec2 wind = Vec2(0.2 * PIXELS_PER_METER, 0.0);
+    particle->AddForce(wind);
 
     // Intagrate the acceleration and the velocity to find the new position
-    particle->velocity += particle->acceleration * deltaTime;
-    particle->position += particle->velocity * deltaTime;
+    particle->Integrate(deltaTime);
 
     // Hardcoded flip in velocity if the particle touches the limits of the screen window
     // Not real physics simulation
