@@ -15,9 +15,9 @@ void Application::Setup() {
     smallBall->radius = 4;
     particles.push_back(smallBall);
 
-    Particle* bigBall = new Particle(200, 100, 3.0);
-    bigBall->radius = 12;
-    particles.push_back(bigBall);
+    // Particle* bigBall = new Particle(200, 100, 3.0);
+    // bigBall->radius = 12;
+    // particles.push_back(bigBall);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -30,9 +30,32 @@ void Application::Input() {
             case SDL_QUIT:
                 running = false;
                 break;
+
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                     running = false;
+
+                if (event.key.keysym.sym == SDLK_UP)
+                    pushForce.y = -50 * PIXELS_PER_METER;
+                if (event.key.keysym.sym == SDLK_RIGHT)
+                    pushForce.x = 50 * PIXELS_PER_METER;
+                if (event.key.keysym.sym == SDLK_DOWN)
+                    pushForce.y = 50 * PIXELS_PER_METER;
+                if (event.key.keysym.sym == SDLK_LEFT)
+                    pushForce.x = -50 * PIXELS_PER_METER;
+
+                break;
+
+            case SDL_KEYUP:
+                if (event.key.keysym.sym == SDLK_UP)
+                    pushForce.y = 0;
+                if (event.key.keysym.sym == SDLK_RIGHT)
+                    pushForce.x = 0;
+                if (event.key.keysym.sym == SDLK_DOWN)
+                    pushForce.y = 0;
+                if (event.key.keysym.sym == SDLK_LEFT)
+                    pushForce.x = 0;
+
                 break;
         }
     }
@@ -69,6 +92,12 @@ void Application::Update() {
     {
         Vec2 weight = Vec2(0.0, particle->mass * 9.8 * PIXELS_PER_METER);
         particle->AddForce(weight);
+    }
+
+    // Apply a "push" force to my particle
+    for (auto particle : particles)
+    {
+        particle->AddForce(pushForce);
     }
 
     // Integrate the acceleration and the velocity to find the new position
