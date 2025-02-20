@@ -13,14 +13,20 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    anchor = Vec2(Graphics::Width() / 2.0, 30);
+    Particle* a = new Particle(100, 100, 1.0);
+    Particle* b = new Particle(300, 100, 1.0);
+    Particle* c = new Particle(300, 300, 1.0);
+    Particle* d = new Particle(100, 300, 1.0);
 
-    for (int i = 0; i < NUM_PARTICLES; i++)
-    {
-        Particle* bob = new Particle(anchor.x, anchor.y + (i * restLength), 2.0);
-        bob->radius = 6;
-        particles.push_back(bob);
-    }
+    a->radius = 6;
+    b->radius = 6;
+    c->radius = 6;
+    d->radius = 6;
+
+    particles.push_back(a);
+    particles.push_back(b);
+    particles.push_back(c);
+    particles.push_back(d);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,7 +126,7 @@ void Application::Update() {
         particle->AddForce(pushForce);
 
         // Apply a "drag" force to the particle
-        Vec2 drag = Force::GenerateDragForce(*particle, 0.002);
+        Vec2 drag = Force::GenerateDragForce(*particle, 0.003);
         particle->AddForce(drag);
 
         // Apply a "weight" force to the particle
@@ -128,19 +134,31 @@ void Application::Update() {
         particle->AddForce(weight);
     }
 
-    // Apply a "spring" force to the particle connected to the anchor
-    Vec2 springForce = Force::GenerateSpringForce(*particles[0], anchor, restLength, k);
-    particles[0]->AddForce(springForce);
+    // Attach particles with springs
+    Vec2 ab = Force::GenerateSpringForce(*particles[0], *particles[1], restLength, k); // a <-> b
+    particles[0]->AddForce(ab);
+    particles[1]->AddForce(-ab);
 
-    // Connect the particles with the one before in a chain of springs
-    for (int i = 1; i < NUM_PARTICLES; i++)
-    {
-        int currParticle = i;
-        int prevParticle = i - 1;
-        Vec2 springForce = Force::GenerateSpringForce(*particles[currParticle], *particles[prevParticle], restLength, k);
-        particles[currParticle]->AddForce(springForce);
-        particles[prevParticle]->AddForce(-springForce);
-    }
+    Vec2 bc = Force::GenerateSpringForce(*particles[1], *particles[2], restLength, k); // b <-> c
+    particles[1]->AddForce(bc);
+    particles[2]->AddForce(-bc);
+
+    Vec2 cd = Force::GenerateSpringForce(*particles[2], *particles[3], restLength, k); // c <-> d
+    particles[2]->AddForce(cd);
+    particles[3]->AddForce(-cd);
+
+    Vec2 da = Force::GenerateSpringForce(*particles[3], *particles[0], restLength, k); // d <-> a
+    particles[3]->AddForce(da);
+    particles[0]->AddForce(-da);
+
+    Vec2 ac = Force::GenerateSpringForce(*particles[0], *particles[2], restLength, k); // a <-> c
+    particles[0]->AddForce(ac);
+    particles[2]->AddForce(-ac);
+
+    Vec2 bd = Force::GenerateSpringForce(*particles[1], *particles[3], restLength, k); // b <-> d
+    particles[1]->AddForce(bd);
+    particles[3]->AddForce(-bd);
+
 
     // Integrate the acceleration and the velocity to find the new position
     for (auto particle : particles)
@@ -188,23 +206,19 @@ void Application::Render() {
         Graphics::DrawLine(particles[lastParticle]->position.x, particles[lastParticle]->position.y, mouseCursor.x, mouseCursor.y, 0xFF0000FF);
     }
 
-    // Draw the anchor and the spring to the first bob
-    Graphics::DrawFillCircle(anchor.x, anchor.y, 5, 0xFF001155);
-    Graphics::DrawLine(anchor.x, anchor.y, particles[0]->position.x, particles[0]->position.y, 0xFFF313131);
+    // Draw all springs
+    Graphics::DrawLine(particles[0]->position.x, particles[0]->position.y, particles[1]->position.x, particles[1]->position.y, 0xFF313131);
+    Graphics::DrawLine(particles[1]->position.x, particles[1]->position.y, particles[2]->position.x, particles[2]->position.y, 0xFF313131);
+    Graphics::DrawLine(particles[2]->position.x, particles[2]->position.y, particles[3]->position.x, particles[3]->position.y, 0xFF313131);
+    Graphics::DrawLine(particles[3]->position.x, particles[3]->position.y, particles[0]->position.x, particles[0]->position.y, 0xFF313131);
+    Graphics::DrawLine(particles[0]->position.x, particles[0]->position.y, particles[2]->position.x, particles[2]->position.y, 0xFF313131);
+    Graphics::DrawLine(particles[1]->position.x, particles[1]->position.y, particles[3]->position.x, particles[3]->position.y, 0xFF313131);
 
-    // Draw all the springs from one particle to the next
-    for (int i = 0; i < NUM_PARTICLES - 1; i++)
-    {
-        int currParticle = i;
-        int nextParticle = i + 1;
-        Graphics::DrawLine(particles[currParticle]->position.x, particles[currParticle]->position.y, particles[nextParticle]->position.x, particles[nextParticle]->position.y, 0xFFF313131);
-    }
-
-    // Draw all the bob particles
-    for (auto particle: particles)
-    {
-        Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFEEBB00);
-    }
+    // Draw all particles
+    Graphics::DrawFillCircle(particles[0]->position.x, particles[0]->position.y, particles[0]->radius, 0xFFEEBB00);
+    Graphics::DrawFillCircle(particles[1]->position.x, particles[1]->position.y, particles[1]->radius, 0xFFEEBB00);
+    Graphics::DrawFillCircle(particles[2]->position.x, particles[2]->position.y, particles[2]->radius, 0xFFEEBB00);
+    Graphics::DrawFillCircle(particles[3]->position.x, particles[3]->position.y, particles[3]->radius, 0xFFEEBB00);
 
     Graphics::RenderFrame();
 }
