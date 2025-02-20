@@ -13,9 +13,13 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Particle* particle = new Particle((int)(Graphics::Width() / 2), (int)(Graphics::Height() / 2), 1.0);
-    particle->radius = 15;
-    particles.push_back(particle);
+    Particle* smallPlanet = new Particle(200, 200, 1.0);
+    smallPlanet->radius = 6;
+    particles.push_back(smallPlanet);
+
+    Particle* bigPlanet = new Particle(500, 500, 20.0);
+    bigPlanet->radius = 20;
+    particles.push_back(bigPlanet);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,10 +117,15 @@ void Application::Update() {
         // Apply a "push" force to my particle
         particle->AddForce(pushForce);
 
-        // Apply a friction force to the particle
-        Vec2 friction = Force::GenerateFrictionForce(*particle, 10.0 * PIXELS_PER_METER);
+        // Apply a "friction" force to the particle
+        Vec2 friction = Force::GenerateFrictionForce(*particle, 20);
         particle->AddForce(friction);
     }
+
+    // Apply a "gravitational attraction" force to the two particles/planets
+    Vec2 attraction = Force::GenerateGravitationalForce(*particles[0], *particles[1], 1000.0, 5, 100);;
+    particles[0]->AddForce(attraction);
+    particles[1]->AddForce(-attraction);
 
     // Integrate the acceleration and the velocity to find the new position
     for (auto particle : particles)
@@ -156,7 +165,7 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
-    Graphics::ClearScreen(0xFF056263);
+    Graphics::ClearScreen(0xFF0F0721);
 
     
     // Draw the liquid on the screen
@@ -167,10 +176,8 @@ void Application::Render() {
         Graphics::DrawLine(particles[0]->position.x, particles[0]->position.y, mouseCursor.x, mouseCursor.y, 0xFF0000FF);
     }
 
-    for (auto particle : particles) 
-    {
-        Graphics::DrawFillCircle(particle->position.x, particle->position.y, particle->radius, 0xFFFFFFFF);
-    }
+    Graphics::DrawFillCircle(particles[0]->position.x, particles[0]->position.y, particles[0]->radius, 0xFFAA3300);
+    Graphics::DrawFillCircle(particles[1]->position.x, particles[1]->position.y, particles[1]->radius, 0xFF00FFFF);
 
     Graphics::RenderFrame();
 }
