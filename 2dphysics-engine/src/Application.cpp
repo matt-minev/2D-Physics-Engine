@@ -13,11 +13,11 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
     
-    Particle* smallBall = new Particle(50, 100, 1.0);
-    smallBall->radius = 4;
-    particles.push_back(smallBall);
+    // Particle* smallBall = new Particle(50, 100, 1.0);
+    // smallBall->radius = 4;
+    // particles.push_back(smallBall);
 
-    Particle* bigBall = new Particle(200, 100, 3.0);
+    Particle* bigBall = new Particle(Graphics::Width()/2, Graphics::Height()/2, 3.0);
     bigBall->radius = 12;
     particles.push_back(bigBall);
 
@@ -102,24 +102,26 @@ void Application::Update() {
     for (auto particle: particles)
     {
         /*
-        // Apply a "wind" force to my particle
-        Vec2 wind = Vec2(0.2 * PIXELS_PER_METER, 0.0);
-        particle->AddForce(wind);
-        */
-
         // Apply a "weight" force to my particle
         Vec2 weight = Vec2(0.0, particle->mass * 9.8 * PIXELS_PER_METER);
         particle->AddForce(weight);
+		*/
 
         // Apply a "push" force to my particle
         particle->AddForce(pushForce);
 
+        /*
         // Apply a drag force if we are inside the liquid
         if (particle->position.y >= liquid.y)
         {
-            Vec2 drag = Force::GenerateDragForce(*particle, 0.04);
+            Vec2 drag = Force::GenerateDragForce(*particle, 0.03);
             particle->AddForce(drag);
         }
+		*/
+
+        // Apply a friction force to the particle
+        Vec2 friction = Force::GenerateFrictionForce(*particle, 10.0 * PIXELS_PER_METER);
+        particle->AddForce(friction);
     }
 
     // Integrate the acceleration and the velocity to find the new position
@@ -162,8 +164,9 @@ void Application::Update() {
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
 
+    
     // Draw the liquid on the screen
-    Graphics::DrawFillRect(liquid.x + liquid.w / 2, liquid.y + liquid.h / 2, liquid.w, liquid.h, 0xFF6E3713);
+    //Graphics::DrawFillRect(liquid.x + liquid.w / 2, liquid.y + liquid.h / 2, liquid.w, liquid.h, 0xFF6E3713);
 
     for (auto particle : particles)
     {
