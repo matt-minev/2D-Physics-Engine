@@ -1,4 +1,5 @@
 #include "Application.h"
+
 #include "./Physics/Constants.h"
 #include "./Physics/Force.h"
 
@@ -63,6 +64,17 @@ void Application::Input() {
                     pushForce.x = 0;
 
                 break;
+
+			case SDL_MOUSEBUTTONDOWN:
+                if (event.button.button == SDL_BUTTON_LEFT)
+                {
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+                    Particle* particle = new Particle(x, y, 1.0);
+                    particle->radius = 5;
+                    particles.push_back(particle);
+                }
+                break;
         }
     }
 }
@@ -89,9 +101,11 @@ void Application::Update() {
     // Apply forces to the particles
     for (auto particle: particles)
     {
+        /*
         // Apply a "wind" force to my particle
         Vec2 wind = Vec2(0.2 * PIXELS_PER_METER, 0.0);
         particle->AddForce(wind);
+        */
 
         // Apply a "weight" force to my particle
         Vec2 weight = Vec2(0.0, particle->mass * 9.8 * PIXELS_PER_METER);
