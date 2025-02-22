@@ -13,8 +13,8 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Body* body = new Body(CircleShape(50), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 1.0);
-    bodies.push_back(body);
+    Body* box = new Body(BoxShape(200, 100), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 1.0);
+    bodies.push_back(box);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -64,10 +64,10 @@ void Application::Update() {
     for (auto body: bodies)
     {
     	// Apply a "weight" force to the body
-        Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
-        body->AddForce(weight);
+        // Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
+        // body->AddForce(weight);
 
-        float torque = 20;
+        float torque = 200;
         body->AddTorque(torque);
     }
 
@@ -76,6 +76,13 @@ void Application::Update() {
     {
         body->IntegrateLinear(deltaTime);
         body->IntegrateAngular(deltaTime);
+
+        bool isPolygon = body->shape->GetType() == POLYGON || body->shape->GetType() == BOX;
+        if (isPolygon)
+        {
+            PolygonShape* polygonShape = (PolygonShape*) body->shape;
+            polygonShape->UpdateVertices(body->rotation, body->position);
+        }
     }
 
     // Hardcoded flip in velocity if the body touches the limits of the screen window
@@ -123,9 +130,11 @@ void Application::Render() {
             CircleShape* circleShape = (CircleShape*) body->shape;
             Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, 0xFFFFFFFF);
         }
-        else
+        
+        if (body->shape->GetType() == BOX)
         {
-	        // TODO: Draw other types of shapes
+            BoxShape* boxShape = (BoxShape*)body->shape;
+            Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, 0xFFFFFFFF);
         }
     }
 
