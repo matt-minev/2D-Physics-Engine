@@ -74,15 +74,7 @@ void Application::Update() {
     // Integrate the acceleration and the velocity to find the new position
     for (auto body : bodies)
     {
-        body->IntegrateLinear(deltaTime);
-        body->IntegrateAngular(deltaTime);
-
-        bool isPolygon = body->shape->GetType() == POLYGON || body->shape->GetType() == BOX;
-        if (isPolygon)
-        {
-            PolygonShape* polygonShape = (PolygonShape*) body->shape;
-            polygonShape->UpdateVertices(body->rotation, body->position);
-        }
+        body->Update(deltaTime);
     }
 
     // Hardcoded flip in velocity if the body touches the limits of the screen window
