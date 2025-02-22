@@ -13,7 +13,7 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Body* body = new Body(Graphics::Width() / 2.0, Graphics::Height() / 2.0, 1.0);
+    Body* body = new Body(CircleShape(50), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 1.0);
     body->radius = 4;
     bodies.push_back(body);
 }
