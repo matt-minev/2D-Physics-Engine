@@ -19,8 +19,10 @@ void Application::Setup() {
 
     Body* boxA = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 1.0);
     Body* boxB = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 1.0);
-    boxA->angularVelocity = 0.4;
-    boxB->angularVelocity = 0.1;
+    // boxA->angularVelocity = 0.4;
+    // boxB->angularVelocity = 0.1;
+    //boxA->rotation = 1.3;
+    boxA->rotation = 2.3;
     bodies.push_back(boxA);
     bodies.push_back(boxB);
 }

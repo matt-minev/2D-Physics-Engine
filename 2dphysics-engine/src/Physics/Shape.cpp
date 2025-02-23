@@ -66,7 +66,7 @@ Vec2 PolygonShape::EdgeAt(int index) const
 	return worldVertices[nextVertex] - worldVertices[currVertex];
 }
 
-float PolygonShape::FindMinSeparation(const PolygonShape* other) const
+float PolygonShape::FindMinSeparation(const PolygonShape* other, Vec2& axis, Vec2& point) const
 {
 	float separation = std::numeric_limits<float>::lowest();
 
@@ -77,19 +77,33 @@ float PolygonShape::FindMinSeparation(const PolygonShape* other) const
 		Vec2 normal = this->EdgeAt(i).Normal();
 
 		float minSep = std::numeric_limits<float>::max();
+		Vec2 minVertex;
 
 		// Loop all the vertices of the "other" polygon
 		for (int j = 0; j < other->worldVertices.size(); j++)
 		{
 			Vec2 vb = other->worldVertices[j];
-			minSep = std::min(minSep, (vb - va).Dot(normal));
+			float proj = (vb - va).Dot(normal);
+			if (proj < minSep)
+			{
+				minSep = proj;
+				minVertex = vb;
+			}
 		}
-		separation = std::max(separation, minSep);
+
+		if (minSep > separation)
+		{
+			separation = minSep;
+			axis = this->EdgeAt(i);
+			point = minVertex;
+		}
 	}
 
 	return separation;
 }
 
+
+// Function to rotate and translate polygon vertices from "local space" to "world space"
 void PolygonShape::UpdateVertices(float angle, const Vec2& position)
 {
 	// Loop all the vertices, transforming from local to world space
