@@ -51,42 +51,18 @@ bool CollisionDetection::IsCollidingCircleCircle(Body* a, Body* b, Contact& cont
     return true;
 }
 
-float FindMinSeparation(const PolygonShape& a, const PolygonShape& b)
-{
-    float separation = std::numeric_limits<float>::lowest();
-
-    // Loop all the vertices of  "a"
-    for (int i = 0; i < a.worldVertices.size(); i++)
-    {
-        Vec2 va = a.worldVertices[i];
-        Vec2 normal = a.EdgeAt(i).Normal();
-
-        float minSep = std::numeric_limits<float>::max();
-
-        // Loop all the vertices of  "b"
-        for (int j = 0; j < b.worldVertices.size(); j++)
-        {
-            Vec2 vb = b.worldVertices[j];
-        	minSep = std::min(minSep, (vb - va).Dot(normal));
-        }
-        separation = std::max(separation, minSep);
-    }
-
-    return separation;
-}
-
 bool CollisionDetection::IsCollidingPolygonPolygon(Body* a, Body* b, Contact& contact)
 {
     const PolygonShape* aPolygonShape = (PolygonShape*) a->shape;
     const PolygonShape* bPolygonShape = (PolygonShape*) b->shape;
 
 
-	if (FindMinSeparation(*aPolygonShape, *bPolygonShape) >= 0)
+	if (aPolygonShape->FindMinSeparation(bPolygonShape) >= 0)
 	{
         return false;
 	}
 
-    if (FindMinSeparation(*bPolygonShape, *aPolygonShape) >= 0)
+    if (bPolygonShape->FindMinSeparation(aPolygonShape) >= 0)
     {
         return false;
     }
