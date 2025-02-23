@@ -17,10 +17,8 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    Body* bigBall = new Body(CircleShape(100), 100, 100, 1.0);
-    Body* smallBall = new Body(CircleShape(50), 500, 100, 1.0);
+    Body* bigBall = new Body(CircleShape(200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bodies.push_back(bigBall);
-    bodies.push_back(smallBall);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,12 +36,11 @@ void Application::Input()
             if (event.key.keysym.sym == SDLK_ESCAPE)
                 running = false;
             break;
-        case SDL_MOUSEMOTION:
+        case SDL_MOUSEBUTTONDOWN:
             int x, y;
             SDL_GetMouseState(&x, &y);
-            bodies[0]->position.x = x;
-            bodies[0]->position.y = y;
-            // ...
+            Body* smallBall = new Body(CircleShape(20), x, y, 1.0);
+            bodies.push_back(smallBall);
             break;
         }
     }
@@ -101,6 +98,10 @@ void Application::Update() {
             Contact contact;
             if (CollisionDetection::IsColliding(a, b, contact))
             {
+                // Resolve the collision using the projection method
+                contact.ResolvePenetration();
+
+                // Draw debug contact information
                 Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3, 0xFFFF00FF);
                 Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3, 0xFFFF00FF);
                 Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFF00FF);

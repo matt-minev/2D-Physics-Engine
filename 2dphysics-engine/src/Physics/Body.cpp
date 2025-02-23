@@ -1,5 +1,7 @@
 #include "Body.h"
+
 #include <iostream>
+#include <cmath>
 
 Body::Body(const Shape& shape, float x, float y, float mass)
 {
@@ -42,6 +44,12 @@ Body::~Body()
 	std::cout << "Body destructor called!" << std::endl;
 }
 
+bool Body::IsStatic() const
+{
+	const float epsilon = 0.005f;
+	return fabs(invMass - 0.0) < epsilon;
+}
+
 void Body::AddForce(const Vec2& force)
 {
 	sumForces += force;
@@ -66,6 +74,11 @@ void Body::ClearTorque()
 
 void Body::IntegrateLinear(float dt)
 {
+	if (IsStatic())
+	{
+		return;
+	}
+
 	// Find the linear acceleration based on the forces that are being applied and the mass
 	acceleration = sumForces * invMass;
 
@@ -82,6 +95,11 @@ void Body::IntegrateLinear(float dt)
 
 void Body::IntegrateAngular(float dt)
 {
+	if (IsStatic())
+	{
+		return;
+	}
+
 	// Find the angular acceleration based on the torque that is being applied and the moment of inertia
 	angularAcceleration = sumTorque * invI;
 

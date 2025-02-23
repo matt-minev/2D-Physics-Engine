@@ -16,6 +16,8 @@ struct Contact {
 
     Contact() = default;
     ~Contact() = default;
+
+    void ResolvePenetration();
 };
 
 #endif
