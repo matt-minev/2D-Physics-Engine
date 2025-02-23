@@ -5,6 +5,7 @@
 #include "./Physics/Constants.h"
 #include "./Physics/Force.h"
 #include "./Physics/CollisionDetection.h"
+#include "./Physics/Contact.h"
 
 bool Application::IsRunning() {
     return running;
@@ -37,9 +38,11 @@ void Application::Input()
             if (event.key.keysym.sym == SDLK_ESCAPE)
                 running = false;
             break;
-        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEMOTION:
             int x, y;
             SDL_GetMouseState(&x, &y);
+            bodies[0]->position.x = x;
+            bodies[0]->position.y = y;
             // ...
             break;
         }
@@ -50,6 +53,8 @@ void Application::Input()
 // Update function (called several times per second to update objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Update() {
+    Graphics::ClearScreen(0xFF0F0721);
+
     // Wait some time until the target frame time in milliseconds is reached
     static int timePreviousFrame;
     int timeToWait = MILLISECS_PER_FRAME - (SDL_GetTicks() - timePreviousFrame);
@@ -68,13 +73,13 @@ void Application::Update() {
     // Apply forces to the bodies
     for (auto body: bodies)
     {
-    	// Apply a "weight" force to the body
-        Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
-        body->AddForce(weight);
-
-        // Apply a "wind" force to the body
-        Vec2 wind = Vec2(20.0 * PIXELS_PER_METER, 0.0);
-        body->AddForce(wind);
+    	// // Apply a "weight" force to the body
+     //    Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
+     //    body->AddForce(weight);
+     //
+     //    // Apply a "wind" force to the body
+     //    Vec2 wind = Vec2(20.0 * PIXELS_PER_METER, 0.0);
+     //    body->AddForce(wind);
     }
 
     // Integrate the acceleration and the velocity to find the new position
@@ -93,8 +98,13 @@ void Application::Update() {
 
             a->isColliding = false;
             b->isColliding = false;
-            if (CollisionDetection::IsColliding(a, b))
+            Contact contact;
+            if (CollisionDetection::IsColliding(a, b, contact))
             {
+                Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3, 0xFFFF00FF);
+                Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3, 0xFFFF00FF);
+                Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFF00FF);
+
                 a->isColliding = true;
                 b->isColliding = true;
             }
@@ -137,7 +147,7 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
-    Graphics::ClearScreen(0xFF0F0721);
+
 
     // Draw all bodies
     for (auto body : bodies) {
