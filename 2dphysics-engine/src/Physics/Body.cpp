@@ -14,6 +14,7 @@ Body::Body(const Shape& shape, float x, float y, float mass)
 	this->angularAcceleration = 0.0;
 	this->sumForces = Vec2(0, 0);
 	this->sumTorque = 0.0;
+	this->restitution = 1.0;
 
 	this->mass = mass;
 	if (mass != 0.0)
@@ -69,6 +70,16 @@ void Body::ClearForces()
 void Body::ClearTorque()
 {
 	sumTorque = 0.0;
+}
+
+void Body::ApplyImpulse(const Vec2& j)
+{
+	if (IsStatic())
+	{
+		return;
+	}
+
+	velocity += j * invMass;
 }
 
 
