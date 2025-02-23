@@ -40,6 +40,7 @@ struct PolygonShape: public Shape
 	virtual ~PolygonShape();
 	ShapeType GetType() const override;
 	Shape* Clone() const override;
+	Vec2 EdgeAt(int index) const;
 	float GetMomentOfInertia() const override;
 
 	// Function to rotate and translate polygon vertices from "local space" to "world space"
