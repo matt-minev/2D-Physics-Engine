@@ -3,6 +3,9 @@
 ###############################################################################
 * text=auto
 
+2dphysics-engine/lib/SDL2_gfx/* linguist-vendored
+
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
