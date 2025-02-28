@@ -20,23 +20,27 @@ void Application::Setup() {
     // Add a floor to stop falling objects
 	Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     floor->restitution = 0.2;
-    bodies.push_back(floor);
+    //bodies.push_back(floor);
 
     // Add a wall to stop falling objects
     Body* wallLeft = new Body(BoxShape(50, Graphics::Height() - 100), 50, Graphics::Height() / 2.0 - 25, 0.0);
-    floor->restitution = 0.2;
-    bodies.push_back(wallLeft);
+    wallLeft->restitution = 0.2;
+    //bodies.push_back(wallLeft);
 
     // Add a wall to stop falling objects
     Body* wallRight = new Body(BoxShape(50, Graphics::Height() - 100), Graphics::Width() - 50, Graphics::Height() / 2.0 - 25, 0.0);
-    floor->restitution = 0.2;
-    bodies.push_back(wallRight);
+    wallRight->restitution = 0.2;
+    //bodies.push_back(wallRight);
 
 	// Add a static box so other boxes can collide
 	Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bigBox->rotation = 1.4;
     bigBox->restitution = 0.1;
 	bodies.push_back(bigBox);
+
+	Body* ball = new Body(CircleShape(50), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 1.0);
+	ball->restitution = 0.1;
+	bodies.push_back(ball);
 
 }
 
@@ -55,12 +59,11 @@ void Application::Input()
             if (event.key.keysym.sym == SDLK_ESCAPE)
                 running = false;
             break;
-        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEMOTION:
             int x, y;
             SDL_GetMouseState(&x, &y);
-			Body* ball = new Body(BoxShape(50, 50), x, y, 1.0);
-            ball->restitution = 0.2;
-            bodies.push_back(ball);
+            bodies[1]->position.x = x;
+			bodies[1]->position.y = y;
             break;
         }
     }
@@ -90,13 +93,9 @@ void Application::Update() {
     // Apply forces to the bodies
     for (auto body: bodies)
     {
-    	// Apply a "weight" force to the body
-        Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
-        body->AddForce(weight);
-     
-     //    // Apply a "wind" force to the body
-     //    Vec2 wind = Vec2(2.0 * PIXELS_PER_METER, 0.0);
-     //    body->AddForce(wind);
+    	// // Apply a "weight" force to the body
+     //    Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
+     //    body->AddForce(weight);
     }
 
     // Integrate the acceleration and the velocity to find the new position
@@ -121,7 +120,7 @@ void Application::Update() {
             if (CollisionDetection::IsColliding(a, b, contact))
             {
                 // Resolve the collision using the projection method
-                contact.ResolveCollision();
+                //contact.ResolveCollision();
 
                 // Draw debug contact information
                 Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3, 0xFFFF00FF);
@@ -132,37 +131,6 @@ void Application::Update() {
                 b->isColliding = true;
             }
 	    }
-    }
-
-    // Hardcoded flip in velocity if the body touches the limits of the screen window
-    // Not real physics simulation
-    for (auto body : bodies)
-    {
-        if (body->shape->GetType() == CIRCLE)
-        {
-            CircleShape* circleShape = (CircleShape*) body->shape;
-            if (body->position.x - circleShape->radius <= 0)
-            {
-                body->position.x = circleShape->radius;
-                body->velocity.x *= -0.9;
-            }
-            else if (body->position.x + circleShape->radius >= Graphics::Width())
-            {
-                body->position.x = Graphics::Width() - circleShape->radius;
-                body->velocity.x *= -0.9;
-            }
-
-            if (body->position.y - circleShape->radius <= 0)
-            {
-                body->position.y = circleShape->radius;
-                body->velocity.y *= -0.9;
-            }
-            else if (body->position.y + circleShape->radius >= Graphics::Height())
-            {
-                body->position.y = Graphics::Height() - circleShape->radius;
-                body->velocity.y *= -0.9;
-            }
-        }
     }
 }
 
