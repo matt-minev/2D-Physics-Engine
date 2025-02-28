@@ -15,6 +15,7 @@ Body::Body(const Shape& shape, float x, float y, float mass)
 	this->sumForces = Vec2(0, 0);
 	this->sumTorque = 0.0;
 	this->restitution = 1.0;
+	this->friction = 0.7;
 
 	this->mass = mass;
 	if (mass != 0.0)
