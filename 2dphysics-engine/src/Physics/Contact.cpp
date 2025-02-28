@@ -33,7 +33,7 @@ void Contact::ResolveCollision() {
     // Calculate the collision impulse along the normal
     float vrelDotNormal = vrel.Dot(normal);
     const Vec2 impulseDirectionN = normal;
-    const float impulseMagnitudeN = -(1 + e) * vrelDotNormal / ((a->invMass + b->invMass) + ra.Cross(normal) * ra.Cross(normal) * a->invI + rb.Cross(normal) * rb.Cross(normal) * b->invI); 
+    const float impulseMagnitudeN = -(1 + e) * vrelDotNormal / ((a->invMass + b->invMass) + ra.Cross(normal) * ra.Cross(normal) * a->invI + rb.Cross(normal) * rb.Cross(normal) * b->invI);
     Vec2 jN = impulseDirectionN * impulseMagnitudeN;
 
 	// Calculate the friction impulse along the tangent
