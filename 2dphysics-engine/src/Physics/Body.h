@@ -45,6 +45,7 @@ struct Body
 	void ClearTorque();
 
 	void ApplyImpulse(const Vec2& j);
+	void ApplyImpulse(const Vec2& j, const Vec2& r);
 
 	void IntegrateLinear(float dt);
 	void IntegrateAngular(float dt);
