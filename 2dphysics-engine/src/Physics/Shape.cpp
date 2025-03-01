@@ -59,6 +59,11 @@ Shape* PolygonShape::Clone() const
 	return new PolygonShape(localVertices);
 }
 
+void CircleShape::UpdateVertices(float angle, const Vec2& position)
+{
+	return; // Circles don't have vertices, so nothing to update
+}
+
 float PolygonShape::GetMomentOfInertia() const
 {
 	// TODO:
