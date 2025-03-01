@@ -30,6 +30,7 @@ void Application::Setup() {
 
     // Add a static box so other objects can collide
     Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
+    bigBox->SetTexture("./assets/crate.png");
     bigBox->restitution = 0.7;
     bigBox->rotation = 1.4;
     bodies.push_back(bigBox);
@@ -160,7 +161,15 @@ void Application::Render() {
         if (body->shape->GetType() == BOX)
         {
             BoxShape* boxShape = (BoxShape*) body->shape;
-            Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, 0xFF00FF00);
+
+            if (!debug && body->texture)
+            {
+				Graphics::DrawTexture(body->position.x, body->position.y, boxShape->width, boxShape->height, body->rotation, body->texture);
+			}
+            else
+            {
+                Graphics::DrawPolygon(body->position.x, body->position.y, boxShape->worldVertices, 0xFF00FF00);
+            }
         }
 
         if (body->shape->GetType() == POLYGON)
