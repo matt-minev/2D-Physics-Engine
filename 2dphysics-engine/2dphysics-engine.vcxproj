@@ -145,6 +145,7 @@
     <ClCompile Include="src\Physics\Force.cpp" />
     <ClCompile Include="src\Physics\Shape.cpp" />
     <ClCompile Include="src\Physics\Vec2.cpp" />
+    <ClCompile Include="src\Physics\World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\basketball.png" />
@@ -166,6 +167,7 @@
     <ClInclude Include="src\Physics\Force.h" />
     <ClInclude Include="src\Physics\Shape.h" />
     <ClInclude Include="src\Physics\Vec2.h" />
+    <ClInclude Include="src\Physics\World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />

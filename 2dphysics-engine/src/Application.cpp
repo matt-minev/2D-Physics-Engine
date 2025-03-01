@@ -1,11 +1,10 @@
 #include "Application.h"
 
-#include <windows.h>
-
 #include "./Physics/Constants.h"
 #include "./Physics/Force.h"
 #include "./Physics/CollisionDetection.h"
 #include "./Physics/Contact.h"
+#include "./Physics/World.h"
 
 bool Application::IsRunning() {
     return running;
@@ -17,6 +16,9 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
+	// Create a physics world with gravity of -9.8 m/s^2
+	world = new World(-9.8);
+
     // Add a floor and walls to contain objects objects
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 100), 50, Graphics::Height() / 2.0 - 25, 0.0);
@@ -24,16 +26,20 @@ void Application::Setup() {
     floor->restitution = 0.5;
     leftWall->restitution = 0.2;
     rightWall->restitution = 0.2;
-    bodies.push_back(floor);
-    bodies.push_back(leftWall);
-    bodies.push_back(rightWall);
+	world->AddBody(floor);
+	world->AddBody(leftWall);
+    world->AddBody(rightWall);
 
     // Add a static box so other objects can collide
     Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bigBox->SetTexture("./assets/crate.png");
     bigBox->restitution = 0.7;
     bigBox->rotation = 1.4;
-    bodies.push_back(bigBox);
+	world->AddBody(bigBox);
+
+    // Add a force to all world objects
+	Vec2 wind(0.5 * PIXELS_PER_METER, 0.0);
+	world->AddForce(wind);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,10 +67,10 @@ void Application::Input()
 
                 Body* ball = new Body(CircleShape(30), x, y, 1.0);
                 ball->SetTexture("./assets/basketball.png");
-                ball->restitution = 0.5;
+                ball->restitution = 0.7;
                 ball->friction = 0.1;
 
-                bodies.push_back(ball);
+				world->AddBody(ball);
             }
 
             if (event.button.button == SDL_BUTTON_RIGHT) 
@@ -75,7 +81,8 @@ void Application::Input()
                 Body* box = new Body(BoxShape(60, 60), x, y, 1.0);
                 box->SetTexture("./assets/crate.png");
                 box->restitution = 0.2;
-                bodies.push_back(box);
+                
+				world->AddBody(box);
             }
 
             if (event.button.button == SDL_BUTTON_MIDDLE)
@@ -88,7 +95,7 @@ void Application::Input()
                 bowBall->restitution = 0.1;
                 bowBall->friction = 0.1;
 
-                bodies.push_back(bowBall);
+				world->AddBody(bowBall);
             }
 
             break;
@@ -117,51 +124,8 @@ void Application::Update() {
     // Set  the time of the current frame to be used in the next one
     timePreviousFrame = SDL_GetTicks();
 
-    // Apply forces to the bodies
-    for (auto body: bodies)
-    {
-    	// Apply a "weight" force to the body
-        Vec2 weight = Vec2(0.0, body->mass * 9.8 * PIXELS_PER_METER);
-        body->AddForce(weight);
-    }
-
-    // Integrate the acceleration and the velocity to find the new position
-    for (auto body : bodies)
-    {
-        body->Update(deltaTime);
-    }
-
-    // Check all the rigidbodies with the other rigidbodies for collision
-    for (int i = 0; i <= bodies.size() - 1; i++)
-    {
-	    for (int j = i + 1; j < bodies.size(); j++)
-	    {
-            Body* a = bodies[i];
-            Body* b = bodies[j];
-
-            a->isColliding = false;
-            b->isColliding = false;
-
-            Contact contact;
-
-            if (CollisionDetection::IsColliding(a, b, contact))
-            {
-                // Resolve the collision using the projection method
-                contact.ResolveCollision();
-
-                if (debug)
-                {
-                    // Draw debug contact information
-                    Graphics::DrawFillCircle(contact.start.x, contact.start.y, 3, 0xFFFF00FF);
-                    Graphics::DrawFillCircle(contact.end.x, contact.end.y, 3, 0xFFFF00FF);
-                    Graphics::DrawLine(contact.start.x, contact.start.y, contact.start.x + contact.normal.x * 15, contact.start.y + contact.normal.y * 15, 0xFFFF00FF);
-                }
-                
-                a->isColliding = true;
-                b->isColliding = true;
-            }
-	    }
-    }
+	// Update world bodies (integration, collision detection & resolution, etc.)
+	world->Update(deltaTime);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -169,7 +133,7 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     // Draw all bodies
-    for (auto body : bodies) 
+    for (auto body : world->GetBodies()) 
     {
         if (body->shape->GetType() == CIRCLE)
         {
@@ -221,11 +185,7 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-
-    for (auto body: bodies)
-    {
-        delete body;
-    }
+    delete world;
 
     Graphics::CloseWindow();
 }
