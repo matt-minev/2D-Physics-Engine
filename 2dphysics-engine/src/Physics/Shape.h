@@ -32,6 +32,8 @@ struct CircleShape: public Shape
 
 struct PolygonShape: public Shape
 {
+	// counter-clockwise order
+	// convex polygon
 	std::vector<Vec2> localVertices;
 	std::vector<Vec2> worldVertices;
 
