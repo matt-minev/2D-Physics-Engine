@@ -43,7 +43,12 @@ Body::Body(const Shape& shape, float x, float y, float mass)
 
 Body::~Body()
 {
+	// Deallocate shape
 	delete shape;
+
+	// Deallocate texture
+	SDL_DestroyTexture(texture);
+
 	std::cout << "Body destructor called!" << std::endl;
 }
 

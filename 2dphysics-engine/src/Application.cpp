@@ -54,24 +54,43 @@ void Application::Input()
                 debug = !debug;
             break;
         case SDL_MOUSEBUTTONDOWN:
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-
-            std::vector<Vec2> vertices =
+            if (event.button.button == SDL_BUTTON_LEFT) 
             {
-                Vec2(50, 80),
-                Vec2(-30, 100),
-                Vec2(-70, 40),
-                Vec2(-50, -50),
-                Vec2(0, -80),
-                Vec2(60, -50),
-                Vec2(90, 20)
-            };
+                int x, y;
+                SDL_GetMouseState(&x, &y);
 
-            Body* poly = new Body(PolygonShape(vertices), x, y, 2.0);
-            poly->restitution = 0.1;
-            poly->friction = 0.7;
-            bodies.push_back(poly);
+                Body* ball = new Body(CircleShape(30), x, y, 1.0);
+                ball->SetTexture("./assets/basketball.png");
+                ball->restitution = 0.5;
+                ball->friction = 0.1;
+
+                bodies.push_back(ball);
+            }
+
+            if (event.button.button == SDL_BUTTON_RIGHT) 
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+
+                Body* box = new Body(BoxShape(60, 60), x, y, 1.0);
+                box->SetTexture("./assets/crate.png");
+                box->restitution = 0.2;
+                bodies.push_back(box);
+            }
+
+            if (event.button.button == SDL_BUTTON_MIDDLE)
+            {
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+
+                Body* bowBall = new Body(CircleShape(25), x, y, 20.0);
+                bowBall->SetTexture("./assets/bowlingball.png");
+                bowBall->restitution = 0.1;
+                bowBall->friction = 0.1;
+
+                bodies.push_back(bowBall);
+            }
+
             break;
         }
     }
@@ -155,7 +174,15 @@ void Application::Render() {
         if (body->shape->GetType() == CIRCLE)
         {
             CircleShape* circleShape = (CircleShape*) body->shape;
-            Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, 0xFF00FF00);
+
+			if (!debug && body->texture)
+			{
+				Graphics::DrawTexture(body->position.x, body->position.y, circleShape->radius * 2, circleShape->radius * 2, body->rotation, body->texture);
+			}
+            else
+            {
+                Graphics::DrawCircle(body->position.x, body->position.y, circleShape->radius, body->rotation, 0xFF00FF00);
+            }
         }
         
         if (body->shape->GetType() == BOX)
@@ -175,7 +202,15 @@ void Application::Render() {
         if (body->shape->GetType() == POLYGON)
         {
             PolygonShape* polygonShape = (PolygonShape*) body->shape;
-            Graphics::DrawPolygon(body->position.x, body->position.y, polygonShape->worldVertices, 0xFF00FF00);
+
+            if (!debug)
+            {
+				Graphics::DrawFillPolygon(body->position.x, body->position.y, polygonShape->worldVertices, 0xFF00FF00);
+			}
+            else
+            {
+                Graphics::DrawPolygon(body->position.x, body->position.y, polygonShape->worldVertices, 0xFF00FF00);
+            }
         }
     }
 
