@@ -70,7 +70,11 @@ void World::Update(float dt)
 	}
 
 	// Collision detection and resolution for all bodies of the world
-	CheckCollisions();
+	// n iterations with 80% of the penetration resolution
+	for (int n = 0; n < 10; n++)
+	{
+		CheckCollisions();
+	}
 }
 
 void World::CheckCollisions()
