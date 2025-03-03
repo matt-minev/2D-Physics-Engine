@@ -117,5 +117,6 @@
     <None Include="SDL2.dll" />
     <None Include="SDL2_image.dll" />
     <None Include="..\README.md" />
+    <None Include="Makefile" />
   </ItemGroup>
 </Project>
