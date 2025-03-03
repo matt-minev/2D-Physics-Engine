@@ -10,8 +10,8 @@ void Contact::ResolvePenetration()
     float da = depth / (a->invMass + b->invMass) * a->invMass;
     float db = depth / (a->invMass + b->invMass) * b->invMass;
 
-    a->position -= normal * da * 0.8;
-    b->position += normal * db * 0.8;
+    a->position -= normal * da;
+    b->position += normal * db;
 
     a->shape->UpdateVertices(a->rotation, a->position);
     b->shape->UpdateVertices(b->rotation, b->position);
