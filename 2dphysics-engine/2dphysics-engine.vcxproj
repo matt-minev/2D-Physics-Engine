@@ -151,6 +151,7 @@
     <ClCompile Include="src\Physics\CollisionDetection.cpp" />
     <ClCompile Include="src\Physics\Contact.cpp" />
     <ClCompile Include="src\Physics\Force.cpp" />
+    <ClCompile Include="src\Physics\MatMN.cpp" />
     <ClCompile Include="src\Physics\Shape.cpp" />
     <ClCompile Include="src\Physics\Vec2.cpp" />
     <ClCompile Include="src\Physics\VecN.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="src\Physics\Constraint.h" />
     <ClInclude Include="src\Physics\Contact.h" />
     <ClInclude Include="src\Physics\Force.h" />
+    <ClInclude Include="src\Physics\MatMN.h" />
     <ClInclude Include="src\Physics\Shape.h" />
     <ClInclude Include="src\Physics\Vec2.h" />
     <ClInclude Include="src\Physics\VecN.h" />
