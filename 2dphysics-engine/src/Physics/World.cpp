@@ -80,10 +80,14 @@ void World::Update(float dt)
 	}
 
 	// Solve all the constraints
-	for (auto& constraint : constraints)
+	for (int i = 0; i < 50; i++)
 	{
-		constraint->Solve();
+		for (auto& constraint : constraints)
+		{
+			constraint->Solve();
+		}
 	}
+
 
 	// Integrate all the velocities
 	for (auto body : bodies)
