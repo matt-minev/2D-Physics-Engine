@@ -54,11 +54,12 @@ VecN Constraint::GetVelocities() const
 	return V;
 }
 
-JointConstraint::JointConstraint() : Constraint(), jacobian(1, 6)
+JointConstraint::JointConstraint() : Constraint(), jacobian(1, 6), cachedLambda(1)
 {
+	cachedLambda.Zero();
 }
 
-JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint) : Constraint(), jacobian(1, 6)
+JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint) : Constraint(), jacobian(1, 6), cachedLambda(1)
 {
 	this->a = a;
 	this->b = b;
@@ -66,9 +67,11 @@ JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint) : Co
 	// Convert anchor point to local space
 	this->aPoint = a->WorldSpaceToLocalSpace(anchorPoint);
 	this->bPoint = b->WorldSpaceToLocalSpace(anchorPoint);
+
+	cachedLambda.Zero();
 }
 
-void JointConstraint::Solve()
+void JointConstraint::PreSolve()
 {
 	// Get the anchor point position in world space
 	const Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
@@ -96,20 +99,33 @@ void JointConstraint::Solve()
 	float J4 = rb.Cross(pb - pa) * 2.0;
 	jacobian.rows[0][5] = J4;   // B angular velocity
 
+	// Before anything else, apply the cachedLambda from the previous Solve() call
+	// This is the warm-starting technique
+	const MatMN Jt = jacobian.Transpose();
+	VecN impulses = Jt * cachedLambda;
+
+	// Apply the impulses to both A & B
+	a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1])); // A linear impulse
+	a->ApplyImpulseAngular(impulses[2]);						  // A angular impulse
+
+	b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4])); // B linear impulse
+	b->ApplyImpulseAngular(impulses[5]);						  // B angular impulse
+}
+
+void JointConstraint::Solve()
+{
 	const VecN V = GetVelocities();
 	const MatMN invM = GetInvM();
 
 	const MatMN J = jacobian;
 	const MatMN Jt = jacobian.Transpose();
 
-	// Compute lambda (The impulse to apply to objects A & B)
-	// Ax = b
+	// Compute lambda using Ax = b (Gauss-Seidel method)
+	// Lambda being the magnitude of the impulses
 	MatMN lhs = J * invM * Jt; // A (left hand side)
 	VecN rhs = J * V * -1.0f;  // b (right hand side)
-
-	// Solve the values of lambda using Ax = b (Gauss-Seidel method)
-	// Lambda being the magnitude of the impulses
 	VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
+	cachedLambda += lambda;
 
 	// Compute the final impulses with direction and magnitude
 	VecN impulses = Jt * lambda;

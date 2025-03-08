@@ -79,8 +79,14 @@ void World::Update(float dt)
 		body->IntegrateForces(dt);
 	}
 
+	// Presolve all the constraints
+	for (auto& constraint : constraints)
+	{
+		constraint->PreSolve();
+	}
+
 	// Solve all the constraints
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 5; i++)
 	{
 		for (auto& constraint : constraints)
 		{
@@ -88,6 +94,11 @@ void World::Update(float dt)
 		}
 	}
 
+	// Postsolve all the constraints
+	for (auto& constraint : constraints)
+	{
+		constraint->PostSolve();
+	}
 
 	// Integrate all the velocities
 	for (auto body : bodies)
