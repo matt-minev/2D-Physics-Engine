@@ -67,3 +67,15 @@ JointConstraint::JointConstraint(Body* a, Body* b, const Vec2& anchorPoint) : Co
 	this->aPoint = a->WorldSpaceToLocalSpace(anchorPoint);
 	this->bPoint = b->WorldSpaceToLocalSpace(anchorPoint);
 }
+
+void JointConstraint::Solve()
+{
+	// Load the Jacobian matrix
+
+	// V = GetVelocities();
+	// invM = GetInvM();
+
+	// Calculate lambda -> The impulse to apply to objects A & B
+
+	// Apply the lambda impulse to both A & B
+}

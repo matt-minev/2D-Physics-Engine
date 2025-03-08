@@ -19,27 +19,13 @@ void Application::Setup() {
 	// Create a physics world with gravity of -9.8 m/s^2
 	world = new World(-9.8);
 
-    // Add a floor and walls to contain objects objects
-    Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
-    Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 100), 50, Graphics::Height() / 2.0 - 25, 0.0);
-    Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 100), Graphics::Width() - 50, Graphics::Height() / 2.0 - 25, 0.0);
-    floor->restitution = 0.5;
-    leftWall->restitution = 0.2;
-    rightWall->restitution = 0.2;
-	world->AddBody(floor);
-	world->AddBody(leftWall);
-    world->AddBody(rightWall);
-
-    // Add a static box so other objects can collide
-    Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
-    bigBox->SetTexture("./assets/crate.png");
-    bigBox->restitution = 0.7;
-    bigBox->rotation = 1.4;
-	world->AddBody(bigBox);
-
-    // Add a force to all world objects
-	Vec2 wind(0.5 * PIXELS_PER_METER, 0.0);
-	world->AddForce(wind);
+	// Add two bodies
+	Body* a = new Body(CircleShape(30), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0f);
+	Body* b = new Body(CircleShape(20), a->position.x - 100, a->position.y, 1.0f);
+    
+    // Add a joint constraint
+	JointConstraint* joint = new JointConstraint(a, b, a->position);
+	world->AddConstraint(joint);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

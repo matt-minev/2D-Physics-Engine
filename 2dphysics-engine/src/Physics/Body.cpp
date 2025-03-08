@@ -131,8 +131,7 @@ void Body::ApplyImpulse(const Vec2& j, const Vec2& r)
 	angularVelocity += r.Cross(j) * invI;
 }
 
-
-void Body::IntegrateLinear(float dt)
+void Body::IntegrateForces(const float dt)
 {
 	if (IsStatic())
 	{
@@ -146,20 +145,6 @@ void Body::IntegrateLinear(float dt)
 	// Integrate the linear acceleration to find the new linear velocity
 	velocity += acceleration * dt;
 
-	// Integrate the velocity to find the new position
-	position += velocity * dt;
-
-	// Clear all the forces acting on the object before the next physics step
-	ClearForces();
-}
-
-void Body::IntegrateAngular(float dt)
-{
-	if (IsStatic())
-	{
-		return;
-	}
-
 	// Find the angular acceleration based on the torque that is being applied and the moment of inertia
 	angularAcceleration = sumTorque * invI;
 
@@ -167,17 +152,25 @@ void Body::IntegrateAngular(float dt)
 	// Integrate the angular acceleration to find the new angular velocity
 	angularVelocity += angularAcceleration * dt;
 
-	// Integrate the angular velocity to find the new angular rotation angle
-	rotation += angularVelocity * dt;
 
-	// Clear all the torque acting on the object before the next physics step
+	// Clear all the forces and torque acting on the object before the next physics step
+	ClearForces();
 	ClearTorque();
 }
 
-void Body::Update(float dt)
+void Body::IntegrateVelocities(float dt)
 {
-	IntegrateLinear(dt);
-	IntegrateAngular(dt);
+	if (IsStatic())
+	{
+		return;
+	}
 
+	// Integrate the velocity to find the new position
+	position += velocity * dt;
+
+	// Integrate the angular velocity to find the new angular rotation angle
+	rotation += angularVelocity * dt;
+
+	// Update the vertices to adjust them to the new position/rotation
 	shape->UpdateVertices(rotation, position);
 }
