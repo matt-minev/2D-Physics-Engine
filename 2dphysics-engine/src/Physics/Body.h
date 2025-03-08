@@ -56,6 +56,9 @@ struct Body
 
 	void SetTexture(const char* textureFileName);
 
+	Vec2 LocalSpaceToWorldSpace(const Vec2& point) const;
+	Vec2 WorldSpaceToLocalSpace(const Vec2& point) const;
+
 	void ApplyImpulse(const Vec2& j);
 	void ApplyImpulse(const Vec2& j, const Vec2& r);
 

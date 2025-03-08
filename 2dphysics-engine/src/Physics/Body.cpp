@@ -67,6 +67,22 @@ void Body::SetTexture(const char* textureFileName)
 	}
 }
 
+Vec2 Body::LocalSpaceToWorldSpace(const Vec2& point) const
+{
+	Vec2 rotated = point.Rotate(rotation);
+	return rotated + position;
+}
+
+Vec2 Body::WorldSpaceToLocalSpace(const Vec2& point) const
+{
+	float translatedX = point.x - position.x;
+	float translatedY = point.y - position.y;
+	float rotatedX = cos(-rotation) * translatedX - sin(-rotation) * translatedY;
+	float rotatedY = cos(-rotation) * translatedY + sin(-rotation) * translatedX;
+
+	return Vec2(rotatedX, rotatedY);
+}
+
 bool Body::IsStatic() const
 {
 	const float epsilon = 0.005f;
