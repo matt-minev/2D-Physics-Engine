@@ -22,6 +22,8 @@ void Application::Setup() {
 	// Add two bodies
 	Body* a = new Body(CircleShape(30), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0f);
 	Body* b = new Body(CircleShape(20), a->position.x - 100, a->position.y, 1.0f);
+	world->AddBody(a);
+	world->AddBody(b);
     
     // Add a joint constraint
 	JointConstraint* joint = new JointConstraint(a, b, a->position);
@@ -163,6 +165,10 @@ void Application::Render() {
             }
         }
     }
+
+	Body* a = world->GetBodies()[0];
+	Body* b = world->GetBodies()[1];
+    Graphics::DrawLine(a->position.x, a->position.y, b->position.x, b->position.y, 0xFFFFFFFF);
 
     Graphics::RenderFrame();
 }

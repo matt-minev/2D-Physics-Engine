@@ -21,6 +21,8 @@ struct MatMN
 	const MatMN& operator = (const MatMN& m);  // m1 = m2
 	VecN operator * (const VecN& v) const;     // m1 * v
 	MatMN operator * (const MatMN& m) const;   // m1 * m2
+
+	static VecN SolveGaussSeidel(const MatMN& A, const VecN& b);
 };
 
 #endif

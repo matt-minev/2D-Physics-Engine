@@ -98,3 +98,24 @@ MatMN MatMN::operator * (const MatMN& m) const
 
 	return result;
 }
+
+VecN MatMN::SolveGaussSeidel(const MatMN& A, const VecN& b)
+{
+	const int N = b.N;
+	VecN X(N);
+	X.Zero();
+
+	// Iterate N times
+	for (int iterations = 0; iterations < N; iterations++)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			if (A.rows[i][i] != 0.0f)
+			{
+				X[i] += (b[i] / A.rows[i][i]) - (A.rows[i].Dot(X) / A.rows[i][i]);
+			}
+		}
+	}
+
+	return X;
+}

@@ -110,7 +110,7 @@ void Body::ClearTorque()
 	sumTorque = 0.0;
 }
 
-void Body::ApplyImpulse(const Vec2& j)
+void Body::ApplyImpulseLinear(const Vec2& j)
 {
 	if (IsStatic())
 	{
@@ -120,7 +120,17 @@ void Body::ApplyImpulse(const Vec2& j)
 	velocity += j * invMass;
 }
 
-void Body::ApplyImpulse(const Vec2& j, const Vec2& r)
+void Body::ApplyImpulseAngular(const float j)
+{
+	if (IsStatic())
+	{
+		return;
+	}
+
+	angularVelocity += j * invI;
+}
+
+void Body::ApplyImpulseAtPoint(const Vec2& j, const Vec2& r)
 {
 	if (IsStatic())
 	{
