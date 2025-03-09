@@ -163,6 +163,13 @@
     <Image Include="assets\bowlingball.png" />
     <Image Include="assets\crate.png" />
     <Image Include="assets\metal.png" />
+    <Image Include="assets\ragdoll\bob.png" />
+    <Image Include="assets\ragdoll\head.png" />
+    <Image Include="assets\ragdoll\leftArm.png" />
+    <Image Include="assets\ragdoll\leftLeg.png" />
+    <Image Include="assets\ragdoll\rightArm.png" />
+    <Image Include="assets\ragdoll\rightLeg.png" />
+    <Image Include="assets\ragdoll\torso.png" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\SDL2_gfx\SDL2_gfxPrimitives.h" />

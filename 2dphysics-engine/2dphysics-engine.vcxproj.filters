@@ -77,6 +77,27 @@
     <Image Include="assets\metal.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\ragdoll\bob.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\ragdoll\head.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\ragdoll\leftArm.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\ragdoll\leftLeg.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\ragdoll\rightArm.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\ragdoll\rightLeg.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\ragdoll\torso.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\SDL2_gfx\SDL2_gfxPrimitives.h">
