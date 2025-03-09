@@ -82,7 +82,7 @@ void World::Update(float dt)
 	// Presolve all the constraints
 	for (auto& constraint : constraints)
 	{
-		constraint->PreSolve();
+		constraint->PreSolve(dt);
 	}
 
 	// Solve all the constraints
