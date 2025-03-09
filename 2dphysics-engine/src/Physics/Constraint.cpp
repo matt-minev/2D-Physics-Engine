@@ -1,5 +1,7 @@
 ﻿#include "Constraint.h"
 
+#include <algorithm>
+
 ///////////////////////////////////////////////////////////////////////////////
 // Mat6x6 with the all inverse mass and inverse I of bodies "a" and "b"
 ///////////////////////////////////////////////////////////////////////////////
@@ -155,12 +157,13 @@ void JointConstraint::PostSolve()
 }
 
 // Penetration Constraints
-PenetrationConstraint::PenetrationConstraint() : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.0f)
+PenetrationConstraint::PenetrationConstraint() : Constraint(), jacobian(2, 6), cachedLambda(2), bias(0.0f)
 {
 	cachedLambda.Zero();
+	friction = 0.0f;
 }
 
-PenetrationConstraint::PenetrationConstraint(Body* a, Body* b, const Vec2& aCollisionPoint, const Vec2& bCollisionPoint, const Vec2& normal) : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.0f)
+PenetrationConstraint::PenetrationConstraint(Body* a, Body* b, const Vec2& aCollisionPoint, const Vec2& bCollisionPoint, const Vec2& normal) : Constraint(), jacobian(2, 6), cachedLambda(2), bias(0.0f)
 {
 	this->a = a;
 	this->b = b;
@@ -173,6 +176,7 @@ PenetrationConstraint::PenetrationConstraint(Body* a, Body* b, const Vec2& aColl
 	this->normal = a->WorldSpaceToLocalSpace(normal);
 
 	cachedLambda.Zero();
+	friction = 0.0f;
 }
 
 void PenetrationConstraint::PreSolve(const float dt)
@@ -188,6 +192,7 @@ void PenetrationConstraint::PreSolve(const float dt)
 	jacobian.Zero();
 
 	// Load Jacobian
+	/* FIRST ROW */
 	// A Part
 	Vec2 J1 = -n;
 	jacobian.rows[0][0] = J1.x; // A linear velocity.x
@@ -203,6 +208,22 @@ void PenetrationConstraint::PreSolve(const float dt)
 
 	float J4 = rb.Cross(n);
 	jacobian.rows[0][5] = J4;   // B angular velocity
+
+	/* SECOND ROW - Friction */
+	// Populate the second row of the Jacobian matrix (tangent vector - friction)
+	friction = std::max(a->friction, b->friction);
+	if (friction > 0.0)
+	{
+		Vec2 t = n.Normal(); // The tangent is the vector perpendicular to the normal
+		// A Part
+		jacobian.rows[1][0] = -t.x;
+		jacobian.rows[1][1] = -t.x;
+		jacobian.rows[1][2] = -ra.Cross(t);
+		// B Part
+		jacobian.rows[1][3] = t.x;
+		jacobian.rows[1][4] = t.y;
+		jacobian.rows[1][5] = rb.Cross(t);
+	}
 
 	// Before anything else, apply the cachedLambda from the previous Solve() call
 	// This is the warm-starting technique
@@ -244,6 +265,14 @@ void PenetrationConstraint::Solve()
 	VecN oldLambda = cachedLambda;
 	cachedLambda += lambda;
 	cachedLambda[0] = (cachedLambda[0] < 0.0f) ? 0.0f : cachedLambda[0];
+
+	// Keep friction values between -maxFriction and maxFriction
+	if (friction > 0.0)
+	{
+		const float maxFriction = cachedLambda[0] * friction;
+		cachedLambda[1] = std::clamp(cachedLambda[1], -maxFriction, maxFriction);
+	}
+
 	lambda = cachedLambda - oldLambda;
 
 	// Compute the final impulses with direction and magnitude

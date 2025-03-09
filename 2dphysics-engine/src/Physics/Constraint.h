@@ -45,8 +45,8 @@ private:
 	MatMN jacobian;
 	VecN cachedLambda;
 	float bias;
-
-	Vec2 normal;
+	Vec2 normal;	// Normal direction of the penetration in A's local space
+	float friction; // Friction coefficient between the two penetrating bodies
 
 public:
 	PenetrationConstraint();
