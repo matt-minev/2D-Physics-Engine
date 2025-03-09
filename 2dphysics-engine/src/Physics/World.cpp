@@ -18,6 +18,11 @@ World::~World()
 		delete body;
 	}
 
+	for (auto constraint : constraints)
+	{
+		delete constraint;
+	}
+
 	std::cout << "World destructor called!" << std::endl;
 }
 
@@ -53,8 +58,11 @@ void World::AddTorque(const float torque)
 
 void World::Update(float dt)
 {
+	// Create a vector of constraints that will be solved frame per frame
+	std::vector<PenetrationConstraint> penetrations;
+
 	// Loop all the bodies of the world applying forces
-	for (auto body : bodies)
+	for (auto& body : bodies)
 	{
 		// Apply the "weight" force to all the bodies
 		Vec2 weight = Vec2(0.0, body->mass * G * PIXELS_PER_METER);
@@ -74,44 +82,11 @@ void World::Update(float dt)
 	}
 
 	// Integrate all the forces
-	for (auto body: bodies)
+	for (auto& body: bodies)
 	{
 		body->IntegrateForces(dt);
 	}
 
-	// Presolve all the constraints
-	for (auto& constraint : constraints)
-	{
-		constraint->PreSolve(dt);
-	}
-
-	// Solve all the constraints
-	for (int i = 0; i < 5; i++)
-	{
-		for (auto& constraint : constraints)
-		{
-			constraint->Solve();
-		}
-	}
-
-	// Postsolve all the constraints
-	for (auto& constraint : constraints)
-	{
-		constraint->PostSolve();
-	}
-
-	// Integrate all the velocities
-	for (auto body : bodies)
-	{
-		body->IntegrateVelocities(dt);
-	}
-
-	// Collision detection and resolution for all bodies of the world
-	CheckCollisions();
-}
-
-void World::CheckCollisions()
-{
 	// Check all the rigidbodies with the other rigidbodies for collision
 	for (int i = 0; i <= bodies.size() - 1; i++)
 	{
@@ -120,16 +95,59 @@ void World::CheckCollisions()
 			Body* a = bodies[i];
 			Body* b = bodies[j];
 
-			a->isColliding = false;
-			b->isColliding = false;
-
 			Contact contact;
 
 			if (CollisionDetection::IsColliding(a, b, contact))
 			{
-				// Resolve the collision using the projection method
-				contact.ResolveCollision();
+				// Create a new penetration constraint
+				PenetrationConstraint penetration(contact.a, contact.b, contact.start, contact.end, contact.normal);
+				penetrations.push_back(penetration);
 			}
 		}
+	}
+
+	// Solve all constraints
+	// PreSolve Joint Constraints
+	for (auto& constraint : constraints)
+	{
+		constraint->PreSolve(dt);
+	}
+
+	// PreSolve Penetration Constraints
+	for (auto& constraint : penetrations)
+	{
+		constraint.PreSolve(dt);
+	}
+
+	// Solve all the constraints
+	for (int i = 0; i < 5; i++)
+	{
+		for (auto& constraint : constraints) // joint constraints
+		{
+			constraint->Solve();
+		}
+
+		for (auto& constraint : penetrations) // penetration constraints
+		{
+			constraint.Solve();
+		}
+	}
+
+	// Postsolve all the joint constraints
+	for (auto& constraint : constraints)
+	{
+		constraint->PostSolve();
+	}
+
+	// Postsolve all the penetration constraints
+	for (auto& constraint : penetrations)
+	{
+		constraint.PostSolve();
+	}
+
+	// Integrate all the velocities
+	for (auto& body : bodies)
+	{
+		body->IntegrateVelocities(dt);
 	}
 }

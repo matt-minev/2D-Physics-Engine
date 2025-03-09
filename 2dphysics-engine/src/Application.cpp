@@ -6,57 +6,27 @@
 #include "./Physics/Contact.h"
 #include "./Physics/World.h"
 
-bool Application::IsRunning() {
+bool Application::IsRunning()
+{
     return running;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Setup function (executed once in the beginning of the simulation)
 ///////////////////////////////////////////////////////////////////////////////
-void Application::Setup() {
+void Application::Setup()
+{
     running = Graphics::OpenWindow();
 
     // Create a physics world with gravity of -9.8 m/s2
     world = new World(-9.8);
 
-    // Add ragdoll parts (rigid bodies)
-    Body* bob = new Body(CircleShape(5), Graphics::Width() / 2.0, Graphics::Height() / 2.0 - 200, 0.0);
-    Body* head = new Body(CircleShape(25), bob->position.x, bob->position.y + 70, 5.0);
-    Body* torso = new Body(BoxShape(50, 100), head->position.x, head->position.y + 80, 3.0);
-    Body* leftArm = new Body(BoxShape(15, 70), torso->position.x - 32, torso->position.y - 10, 1.0);
-    Body* rightArm = new Body(BoxShape(15, 70), torso->position.x + 32, torso->position.y - 10, 1.0);
-    Body* leftLeg = new Body(BoxShape(20, 90), torso->position.x - 20, torso->position.y + 97, 1.0);
-    Body* rightLeg = new Body(BoxShape(20, 90), torso->position.x + 20, torso->position.y + 97, 1.0);
-    bob->SetTexture("./assets/ragdoll/bob.png");
-    head->SetTexture("./assets/ragdoll/head.png");
-    torso->SetTexture("./assets/ragdoll/torso.png");
-    leftArm->SetTexture("./assets/ragdoll/leftArm.png");
-    rightArm->SetTexture("./assets/ragdoll/rightArm.png");
-    leftLeg->SetTexture("./assets/ragdoll/leftLeg.png");
-    rightLeg->SetTexture("./assets/ragdoll/rightLeg.png");
-    world->AddBody(bob);
-    world->AddBody(head);
-    world->AddBody(torso);
-    world->AddBody(leftArm);
-    world->AddBody(rightArm);
-    world->AddBody(leftLeg);
-    world->AddBody(rightLeg);
+    // Add a static circle in the middle of the screen
+    Body* bigBall = new Body(CircleShape(64), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
+    bigBall->SetTexture("./assets/bowlingball.png");
+    world->AddBody(bigBall);
 
-    // Add joints between ragdoll parts (distance constraints with one anchor point)
-    JointConstraint* string = new JointConstraint(bob, head, bob->position);
-    JointConstraint* neck = new JointConstraint(head, torso, head->position + Vec2(0, 25));
-    JointConstraint* leftShoulder = new JointConstraint(torso, leftArm, torso->position + Vec2(-28, -45));
-    JointConstraint* rightShoulder = new JointConstraint(torso, rightArm, torso->position + Vec2(+28, -45));
-    JointConstraint* leftHip = new JointConstraint(torso, leftLeg, torso->position + Vec2(-20, +50));
-    JointConstraint* rightHip = new JointConstraint(torso, rightLeg, torso->position + Vec2(+20, +50));
-    world->AddConstraint(string);
-    world->AddConstraint(neck);
-    world->AddConstraint(leftShoulder);
-    world->AddConstraint(rightShoulder);
-    world->AddConstraint(leftHip);
-    world->AddConstraint(rightHip);
-
-    // Add a floor and walls to contain objects objects
+    // // Add a floor and walls to contain objects objects
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 100), 50, Graphics::Height() / 2.0 - 25, 0.0);
     Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 100), Graphics::Width() - 50, Graphics::Height() / 2.0 - 25, 0.0);
@@ -91,7 +61,7 @@ void Application::Input()
                 int x, y;
                 SDL_GetMouseState(&x, &y);
 
-                Body* ball = new Body(CircleShape(30), x, y, 1.0);
+                Body* ball = new Body(CircleShape(64), x, y, 1.0);
                 ball->SetTexture("./assets/basketball.png");
                 ball->restitution = 0.7;
                 ball->friction = 0.1;
@@ -104,7 +74,7 @@ void Application::Input()
                 int x, y;
                 SDL_GetMouseState(&x, &y);
 
-                Body* box = new Body(BoxShape(60, 60), x, y, 1.0);
+                Body* box = new Body(BoxShape(140, 140), x, y, 1.0);
                 box->SetTexture("./assets/crate.png");
                 box->restitution = 0.2;
 
@@ -124,16 +94,6 @@ void Application::Input()
                 world->AddBody(bowBall);
             }
             break;
-
-        case SDL_MOUSEMOTION:
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            Vec2 mouse = Vec2(x, y);
-            Body* bob = world->GetBodies()[0];
-            Vec2 direction = (mouse - bob->position).Normalize();
-            float speed = 1.0;
-            bob->position += direction * speed;
-            break;
         }
     }
 }
@@ -141,7 +101,8 @@ void Application::Input()
 ///////////////////////////////////////////////////////////////////////////////
 // Update function (called several times per second to update objects)
 ///////////////////////////////////////////////////////////////////////////////
-void Application::Update() {
+void Application::Update()
+{
     Graphics::ClearScreen(0xFF0F0721);
 
     // Wait some time until the target frame time in milliseconds is reached
@@ -166,23 +127,8 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
-void Application::Render() {
-
-    // Draw a line between the bob and the ragdoll head
-    Body* bob = world->GetBodies()[0];
-    Body* head = world->GetBodies()[1];
-    Graphics::DrawLine(bob->position.x, bob->position.y, head->position.x, head->position.y, 0xFF555555);
-
-    // Draw all joints anchor points
-    for (auto joint : world->GetConstraints()) 
-    {
-        if (debug) 
-        {
-            const Vec2 anchorPoint = joint->a->LocalSpaceToWorldSpace(joint->aPoint);
-            Graphics::DrawFillCircle(anchorPoint.x, anchorPoint.y, 3, 0xFF0000FF);
-        }
-    }
-
+void Application::Render()
+{
     // Draw all bodies
     for (auto body : world->GetBodies())
     {

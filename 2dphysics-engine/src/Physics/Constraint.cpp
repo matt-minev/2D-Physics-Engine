@@ -112,7 +112,7 @@ void JointConstraint::PreSolve(const float dt)
 	b->ApplyImpulseAngular(impulses[5]);						  // B angular impulse
 
 	// Compute the bias term (Baumgarte stabilization technique)
-	const float beta = 0.1f;
+	const float beta = 0.2f;
 
 	//Compute the positional error
 	float C = (pb - pa).Dot(pb - pa);
@@ -147,4 +147,112 @@ void JointConstraint::Solve()
 
 	b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4])); // B linear impulse
 	b->ApplyImpulseAngular(impulses[5]);						  // B angular impulse
+}
+
+void JointConstraint::PostSolve()
+{
+	// TODO: Maybe should clamp the values of cached lambda to reasonable limits
+}
+
+// Penetration Constraints
+PenetrationConstraint::PenetrationConstraint() : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.0f)
+{
+	cachedLambda.Zero();
+}
+
+PenetrationConstraint::PenetrationConstraint(Body* a, Body* b, const Vec2& aCollisionPoint, const Vec2& bCollisionPoint, const Vec2& normal) : Constraint(), jacobian(1, 6), cachedLambda(1), bias(0.0f)
+{
+	this->a = a;
+	this->b = b;
+
+	// Convert collision points to local space
+	this->aPoint = a->WorldSpaceToLocalSpace(aCollisionPoint);
+	this->bPoint = b->WorldSpaceToLocalSpace(bCollisionPoint);
+
+	// Convert normal vector to local space
+	this->normal = a->WorldSpaceToLocalSpace(normal);
+
+	cachedLambda.Zero();
+}
+
+void PenetrationConstraint::PreSolve(const float dt)
+{
+	// Get the collision points position in world space
+	const Vec2 pa = a->LocalSpaceToWorldSpace(aPoint);
+	const Vec2 pb = b->LocalSpaceToWorldSpace(bPoint);
+	Vec2 n = a->LocalSpaceToWorldSpace(normal); // Normal vector to local space
+
+	const Vec2 ra = pa - a->position;
+	const Vec2 rb = pb - b->position;
+
+	jacobian.Zero();
+
+	// Load Jacobian
+	// A Part
+	Vec2 J1 = -n;
+	jacobian.rows[0][0] = J1.x; // A linear velocity.x
+	jacobian.rows[0][1] = J1.y; // A linear velocity.y
+
+	float J2 = -ra.Cross(n);
+	jacobian.rows[0][2] = J2;   // A angular velocity
+
+	// B Part
+	Vec2 J3 = n;
+	jacobian.rows[0][3] = J3.x; // B linear velocity.x
+	jacobian.rows[0][4] = J3.y; // B linear velocity.y
+
+	float J4 = rb.Cross(n);
+	jacobian.rows[0][5] = J4;   // B angular velocity
+
+	// // Before anything else, apply the cachedLambda from the previous Solve() call
+	// // This is the warm-starting technique
+	// const MatMN Jt = jacobian.Transpose();
+	// VecN impulses = Jt * cachedLambda;
+	//
+	// // Apply the impulses to both A & B
+	// a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1])); // A linear impulse
+	// a->ApplyImpulseAngular(impulses[2]);						  // A angular impulse
+	//
+	// b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4])); // B linear impulse
+	// b->ApplyImpulseAngular(impulses[5]);						  // B angular impulse
+
+	// Compute the bias term (Baumgarte stabilization technique)
+	const float beta = 0.2f;
+	float C = (pb - pa).Dot(-n); //Compute the positional error
+	C = std::min(0.0f, C + 0.01f);
+
+	bias = (beta / dt) * C;
+}
+
+void PenetrationConstraint::Solve()
+{
+	const VecN V = GetVelocities();
+	const MatMN invM = GetInvM();
+
+	const MatMN J = jacobian;
+	const MatMN Jt = jacobian.Transpose();
+
+	// Compute lambda using Ax = b (Gauss-Seidel method)
+	// Lambda being the magnitude of the impulses
+	MatMN lhs = J * invM * Jt; // A (left hand side)
+	VecN rhs = J * V * -1.0f;  // b (right hand side)
+	rhs[0] -= bias;
+
+	VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
+	/*cachedLambda += lambda;*/
+
+	// Compute the final impulses with direction and magnitude
+	VecN impulses = Jt * lambda;
+
+	// Apply the impulses to both A & B
+	a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1])); // A linear impulse
+	a->ApplyImpulseAngular(impulses[2]);						  // A angular impulse
+
+	b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4])); // B linear impulse
+	b->ApplyImpulseAngular(impulses[5]);						  // B angular impulse
+}
+
+void PenetrationConstraint::PostSolve()
+{
+	// TODO: Maybe should clamp the values of cached lambda to reasonable limits
 }

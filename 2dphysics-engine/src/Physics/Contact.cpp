@@ -1,7 +1,8 @@
-#include "Contact.h"
+ #include "Contact.h"
 
 void Contact::ResolvePenetration()
 {
+    /* Deprecated */
     if (a->IsStatic() && b->IsStatic())
     {
         return;
@@ -19,6 +20,7 @@ void Contact::ResolvePenetration()
 
 // Resolves the collision using the impulse method
 void Contact::ResolveCollision() {
+    /* Deprecated */
     // Apply positional correction using the projection method
     ResolvePenetration();
 
