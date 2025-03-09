@@ -21,21 +21,21 @@ void Application::Setup()
     // Create a physics world with gravity of -9.8 m/s2
     world = new World(-9.8);
 
-    // Add a static circle in the middle of the screen
-    Body* bigBall = new Body(CircleShape(64), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
-    bigBall->SetTexture("./assets/bowlingball.png");
-    world->AddBody(bigBall);
-
     // // Add a floor and walls to contain objects objects
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 100), 50, Graphics::Height() / 2.0 - 25, 0.0);
     Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 100), Graphics::Width() - 50, Graphics::Height() / 2.0 - 25, 0.0);
-    floor->restitution = 0.7;
-    leftWall->restitution = 0.2;
-    rightWall->restitution = 0.2;
     world->AddBody(floor);
     world->AddBody(leftWall);
     world->AddBody(rightWall);
+
+    // Add rigid bodies to the scene
+    Body* a = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
+    Body* b = new Body(BoxShape(200, 200), 300, 0, 0.0);
+    a->rotation = 0.0;
+    b->rotation = 0.0;
+    world->AddBody(a);
+    world->AddBody(b);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,6 +93,13 @@ void Application::Input()
 
                 world->AddBody(bowBall);
             }
+            break;
+        case SDL_MOUSEMOTION:
+            int x, y;
+            SDL_GetMouseState(&x, &y);
+            Body* box = world->GetBodies()[4];
+            box->position.x = x;
+            box->position.y = y;
             break;
         }
     }

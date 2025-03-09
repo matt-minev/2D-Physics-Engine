@@ -150,7 +150,6 @@
     <ClCompile Include="src\Physics\Body.cpp" />
     <ClCompile Include="src\Physics\CollisionDetection.cpp" />
     <ClCompile Include="src\Physics\Constraint.cpp" />
-    <ClCompile Include="src\Physics\Contact.cpp" />
     <ClCompile Include="src\Physics\Force.cpp" />
     <ClCompile Include="src\Physics\MatMN.cpp" />
     <ClCompile Include="src\Physics\Shape.cpp" />

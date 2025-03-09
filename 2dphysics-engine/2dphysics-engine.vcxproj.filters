@@ -48,9 +48,6 @@
     <ClCompile Include="src\Physics\CollisionDetection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Contact.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Physics\World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

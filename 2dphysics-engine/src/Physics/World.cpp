@@ -2,6 +2,8 @@
 #include "Constants.h"
 #include "CollisionDetection.h"
 
+#include "../Graphics.h"
+
 #include <iostream>
 
 World::World(float gravity)
@@ -95,17 +97,25 @@ void World::Update(float dt)
 			Body* a = bodies[i];
 			Body* b = bodies[j];
 
-			Contact contact;
+			std::vector<Contact> contacts;
 
-			if (CollisionDetection::IsColliding(a, b, contact))
+			if (CollisionDetection::IsColliding(a, b, contacts))
 			{
-				// Create a new penetration constraint
-				PenetrationConstraint penetration(contact.a, contact.b, contact.start, contact.end, contact.normal);
-				penetrations.push_back(penetration);
+				for (auto contact: contacts)
+				{
+					// Draw collision points
+					Graphics::DrawCircle(contact.start.x, contact.start.y, 5, 0.0, 0xFF00FFFF);
+					Graphics::DrawCircle(contact.end.x, contact.end.y, 2, 0.0, 0xFF00FFFF);
+
+					// Create a new penetration constraint
+					PenetrationConstraint penetration(contact.a, contact.b, contact.start, contact.end, contact.normal);
+					penetrations.push_back(penetration);
+				}
 			}
 		}
 	}
 
+	/*
 	// Solve all constraints
 	// PreSolve Joint Constraints
 	for (auto& constraint : constraints)
@@ -144,6 +154,7 @@ void World::Update(float dt)
 	{
 		constraint.PostSolve();
 	}
+	*/
 
 	// Integrate all the velocities
 	for (auto& body : bodies)
