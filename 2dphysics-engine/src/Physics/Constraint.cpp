@@ -215,14 +215,12 @@ void PenetrationConstraint::PreSolve(const float dt)
 	if (friction > 0.0)
 	{
 		Vec2 t = n.Normal(); // The tangent is the vector perpendicular to the normal
-		// A Part
-		jacobian.rows[1][0] = -t.x;
-		jacobian.rows[1][1] = -t.x;
-		jacobian.rows[1][2] = -ra.Cross(t);
-		// B Part
-		jacobian.rows[1][3] = t.x;
-		jacobian.rows[1][4] = t.y;
-		jacobian.rows[1][5] = rb.Cross(t);
+        jacobian.rows[1][0] = -t.x;          // A linear velocity.x
+        jacobian.rows[1][1] = -t.y;          // A linear velocity.y
+        jacobian.rows[1][2] = -ra.Cross(t);  // A angular velocity
+        jacobian.rows[1][3] = t.x;           // B linear velocity.x
+        jacobian.rows[1][4] = t.y;           // B linear velocity.y
+        jacobian.rows[1][5] = rb.Cross(t);   // B angukar velocity
 	}
 
 	// Before anything else, apply the cachedLambda from the previous Solve() call
@@ -242,7 +240,16 @@ void PenetrationConstraint::PreSolve(const float dt)
 	float C = (pb - pa).Dot(-n); //Compute the positional error
 	C = std::min(0.0f, C + 0.01f);
 
-	bias = (beta / dt) * C;
+	// Calculate relative velocity pre-impulse normal, which will be used to compute elasticity
+	Vec2 va = a->velocity + Vec2(-a->angularVelocity * ra.y, a->angularVelocity * ra.x);
+	Vec2 vb = b->velocity + Vec2(-b->angularVelocity * rb.y, b->angularVelocity * rb.x);
+	float vrelDotNormal = (va - vb).Dot(n);
+
+	// Get the restitution between the two bodies
+	float e = std::min(a->restitution, b->restitution);
+
+	// Calculate bias term considering elasticity (restitution)
+	bias = (beta / dt) * C + (e * vrelDotNormal);
 }
 
 void PenetrationConstraint::Solve()
