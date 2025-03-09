@@ -204,17 +204,17 @@ void PenetrationConstraint::PreSolve(const float dt)
 	float J4 = rb.Cross(n);
 	jacobian.rows[0][5] = J4;   // B angular velocity
 
-	// // Before anything else, apply the cachedLambda from the previous Solve() call
-	// // This is the warm-starting technique
-	// const MatMN Jt = jacobian.Transpose();
-	// VecN impulses = Jt * cachedLambda;
-	//
-	// // Apply the impulses to both A & B
-	// a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1])); // A linear impulse
-	// a->ApplyImpulseAngular(impulses[2]);						  // A angular impulse
-	//
-	// b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4])); // B linear impulse
-	// b->ApplyImpulseAngular(impulses[5]);						  // B angular impulse
+	// Before anything else, apply the cachedLambda from the previous Solve() call
+	// This is the warm-starting technique
+	const MatMN Jt = jacobian.Transpose();
+	VecN impulses = Jt * cachedLambda;
+	
+	// Apply the impulses to both A & B
+	a->ApplyImpulseLinear(Vec2(impulses[0], impulses[1])); // A linear impulse
+	a->ApplyImpulseAngular(impulses[2]);						  // A angular impulse
+	
+	b->ApplyImpulseLinear(Vec2(impulses[3], impulses[4])); // B linear impulse
+	b->ApplyImpulseAngular(impulses[5]);						  // B angular impulse
 
 	// Compute the bias term (Baumgarte stabilization technique)
 	const float beta = 0.2f;
@@ -239,7 +239,12 @@ void PenetrationConstraint::Solve()
 	rhs[0] -= bias;
 
 	VecN lambda = MatMN::SolveGaussSeidel(lhs, rhs);
-	/*cachedLambda += lambda;*/
+
+	// Accumulate impulses and clamp it within constraint limits
+	VecN oldLambda = cachedLambda;
+	cachedLambda += lambda;
+	cachedLambda[0] = (cachedLambda[0] < 0.0f) ? 0.0f : cachedLambda[0];
+	lambda = cachedLambda - oldLambda;
 
 	// Compute the final impulses with direction and magnitude
 	VecN impulses = Jt * lambda;
