@@ -172,10 +172,10 @@ void Body::IntegrateForces(const float dt)
 
 void Body::IntegrateVelocities(float dt)
 {
-	// if (IsStatic())
-	// {
-	// 	return;
-	// }
+	if (IsStatic())
+	{
+		return;
+	}
 
 	// Integrate the velocity to find the new position
 	position += velocity * dt;

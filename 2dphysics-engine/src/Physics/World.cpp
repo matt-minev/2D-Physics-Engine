@@ -115,7 +115,6 @@ void World::Update(float dt)
 		}
 	}
 
-	/*
 	// Solve all constraints
 	// PreSolve Joint Constraints
 	for (auto& constraint : constraints)
@@ -154,7 +153,6 @@ void World::Update(float dt)
 	{
 		constraint.PostSolve();
 	}
-	*/
 
 	// Integrate all the velocities
 	for (auto& body : bodies)
