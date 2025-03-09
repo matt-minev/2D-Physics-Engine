@@ -170,10 +170,11 @@ void Body::IntegrateForces(const float dt)
 	ClearTorque();
 }
 
-void Body::IntegrateVelocities(float dt)
+void Body::IntegrateVelocities(const float dt)
 {
 	if (IsStatic())
 	{
+		//shape->UpdateVertices(rotation, position);
 		return;
 	}
 
