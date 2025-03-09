@@ -36,6 +36,48 @@ bool Graphics::OpenWindow() {
     return true;
 }
 
+bool Graphics::OpenWindow(int width, int height)
+{
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    // Get the native display mode for screen resolution
+    SDL_DisplayMode display_mode;
+    if (SDL_GetCurrentDisplayMode(0, &display_mode) != 0) {
+        std::cerr << "Error getting display mode: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    // If the requested dimensions exceed the native resolution, use the native resolution.
+    if (width > display_mode.w) {
+        width = display_mode.w;
+    }
+    if (height > display_mode.h) {
+        height = display_mode.h;
+    }
+
+    windowWidth = width;
+    windowHeight = height;
+
+    // Center the window on the screen
+    //window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_BORDERLESS);
+    window = SDL_CreateWindow("SDL Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+    if (!window) {
+        std::cerr << "Error creating SDL window: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer) {
+        std::cerr << "Error creating SDL renderer: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 void Graphics::ClearScreen(Uint32 color) {
     SDL_SetRenderDrawColor(renderer, color >> 16, color >> 8, color, 255);
     SDL_RenderClear(renderer);

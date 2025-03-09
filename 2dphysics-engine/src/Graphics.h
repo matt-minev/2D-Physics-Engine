@@ -15,6 +15,7 @@ struct Graphics {
     static int Width();
     static int Height();
     static bool OpenWindow();
+    static bool OpenWindow(int width, int height);
     static void CloseWindow();
     static void ClearScreen(Uint32 color);
     static void RenderFrame();

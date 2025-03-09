@@ -16,7 +16,7 @@ bool Application::IsRunning()
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Setup()
 {
-    running = Graphics::OpenWindow();
+    running = Graphics::OpenWindow(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Create a physics world with gravity of -9.8 m/s2
     world = new World(-9.8);
@@ -35,12 +35,14 @@ void Application::Setup()
     world->AddBody(bird);
 
     // Add a floor and walls to contain objects objects
-    Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() / 2.0 + 345, 0.0);
+    Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() / 2.0 + 290, 0.0);
     Body* leftFence = new Body(BoxShape(50, Graphics::Height() - 200), 0, Graphics::Height() / 2.0 - 35, 0.0);
     Body* rightFence = new Body(BoxShape(50, Graphics::Height() - 200), Graphics::Width(), Graphics::Height() / 2.0 - 35, 0.0);
+    Body* ceiling = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, 0, 0.0);
     world->AddBody(floor);
     world->AddBody(leftFence);
     world->AddBody(rightFence);
+    world->AddBody(ceiling);
 
     // Add a stack of boxes
     for (int i = 1; i <= 4; i++) 

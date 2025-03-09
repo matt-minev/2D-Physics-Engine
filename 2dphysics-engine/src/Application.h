@@ -7,6 +7,9 @@
 
 class Application {
     private:
+        const int WINDOW_WIDTH = 1440;
+        const int WINDOW_HEIGHT = 900;
+
         bool debug = false;
         bool running = false;
 
