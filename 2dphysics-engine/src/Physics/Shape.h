@@ -45,7 +45,8 @@ struct PolygonShape: public Shape
 	ShapeType GetType() const override;
 	Shape* Clone() const override;
 	Vec2 EdgeAt(int index) const;
-	float FindMinSeparation(const PolygonShape* other, Vec2& axis, Vec2& point) const;
+	float FindMinSeparation(const PolygonShape* other, int& indexReferenceEdge, Vec2& supportPoint) const;
+	int FindIncidentEdge(const Vec2& normal) const;
 	float GetMomentOfInertia() const override;
 	void UpdateVertices(float angle, const Vec2& position) override;
 };
