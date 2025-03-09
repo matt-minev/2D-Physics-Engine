@@ -129,7 +129,7 @@ void World::Update(float dt)
 	}
 
 	// Solve all the constraints
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		for (auto& constraint : constraints) // joint constraints
 		{

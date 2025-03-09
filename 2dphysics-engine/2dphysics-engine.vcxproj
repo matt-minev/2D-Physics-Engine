@@ -158,6 +158,18 @@
     <ClCompile Include="src\Physics\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="assets\angrybirds\background.png" />
+    <Image Include="assets\angrybirds\bird-red.png" />
+    <Image Include="assets\angrybirds\pig-1.png" />
+    <Image Include="assets\angrybirds\pig-2.png" />
+    <Image Include="assets\angrybirds\rock-box.png" />
+    <Image Include="assets\angrybirds\rock-bridge-anchor.png" />
+    <Image Include="assets\angrybirds\rock-round.png" />
+    <Image Include="assets\angrybirds\wood-box.png" />
+    <Image Include="assets\angrybirds\wood-bridge-step.png" />
+    <Image Include="assets\angrybirds\wood-plank-cracked.png" />
+    <Image Include="assets\angrybirds\wood-plank-solid.png" />
+    <Image Include="assets\angrybirds\wood-triangle.png" />
     <Image Include="assets\basketball.png" />
     <Image Include="assets\bowlingball.png" />
     <Image Include="assets\crate.png" />

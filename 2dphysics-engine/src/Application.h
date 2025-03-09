@@ -12,6 +12,8 @@ class Application {
 
         World* world;
 
+        SDL_Texture* bgTexture;
+
     public:
         Application() = default;
         ~Application() = default;

@@ -95,6 +95,42 @@
     <Image Include="assets\ragdoll\torso.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\angrybirds\background.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\bird-red.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\pig-1.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\pig-2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\rock-box.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\rock-bridge-anchor.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\rock-round.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\wood-box.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\wood-bridge-step.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\wood-plank-cracked.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\wood-plank-solid.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\angrybirds\wood-triangle.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\SDL2_gfx\SDL2_gfxPrimitives.h">
