@@ -132,6 +132,42 @@ int PolygonShape::FindIncidentEdge(const Vec2& normal) const
 	return indexIncidentEdge;
 }
 
+int PolygonShape::ClipSegmentToLine(const std::vector<Vec2>& contactsIn, std::vector<Vec2>& contactsOut, const Vec2& c0, const Vec2& c1) const
+{
+	// Start with no output points
+	int numOut = 0;
+
+	// Calculate the distance of end points to the line
+	Vec2 normal = (c1 - c0).Normalize();
+	float dist0 = (contactsIn[0] - c0).Cross(normal);
+	float dist1 = (contactsIn[1] - c0).Cross(normal);
+
+	// If the points are behind the plane
+	if (dist0 <= 0)
+	{
+		contactsOut[numOut++] = contactsIn[0];
+	}
+		
+	if (dist1 <= 0)
+	{
+		contactsOut[numOut++] = contactsIn[1];
+	}
+
+	// If the points are on different sides of the plane (one distance is negative and the other is positive)
+	if (dist0 * dist1 < 0) 
+	{
+		float totalDist = dist0 - dist1;
+
+		// Find the intersection using linear interpolation: lerp(start,end) => start + t*(end-start)
+		float t = dist0 / (totalDist);
+		Vec2 contact = contactsIn[0] + (contactsIn[1] - contactsIn[0]) * t;
+		contactsOut[numOut] = contact;
+		numOut++;
+	}
+
+	return numOut;
+}
+
 
 // Function to rotate and translate polygon vertices from "local space" to "world space"
 void PolygonShape::UpdateVertices(float angle, const Vec2& position)
