@@ -101,10 +101,6 @@ void World::Update(float dt)
 			{
 				for (auto contact: contacts)
 				{
-					// Draw collision points
-					//Graphics::DrawCircle(contact.start.x, contact.start.y, 5, 0.0, 0xFF00FFFF);
-					//Graphics::DrawCircle(contact.end.x, contact.end.y, 2, 0.0, 0xFF00FFFF);
-
 					// Create a new penetration constraint
 					PenetrationConstraint penetration(contact.a, contact.b, contact.start, contact.end, contact.normal);
 					penetrations.push_back(penetration);

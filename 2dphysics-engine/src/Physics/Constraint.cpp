@@ -220,7 +220,7 @@ void PenetrationConstraint::PreSolve(const float dt)
         jacobian.rows[1][2] = -ra.Cross(t);  // A angular velocity
         jacobian.rows[1][3] = t.x;           // B linear velocity.x
         jacobian.rows[1][4] = t.y;           // B linear velocity.y
-        jacobian.rows[1][5] = rb.Cross(t);   // B angukar velocity
+        jacobian.rows[1][5] = rb.Cross(t);   // B angular velocity
 	}
 
 	// Before anything else, apply the cachedLambda from the previous Solve() call
