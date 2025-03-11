@@ -2,6 +2,11 @@
 
 Impat Engine is a 2D Game Physics Engine written in C++ that provides robust physics simulation including rigid body dynamics, collision detection/resolution, and more. It’s designed with inspiration from popular physics libraries such as [Box2D](https://box2d.org/) and [Chipmunk2D](https://chipmunk-physics.net/).
 
+### 🌐 [Impact Engine - Official Website](https://impact.mattmaster.com)
+
+[![Website](https://img.shields.io/badge/Visit-Website-blue?style=for-the-badge)](https://impact.mattmaster.com)
+![Impact Engine Logo](2dphysics-engine/assets/logo.png)
+
 ---
 
 ## Table of Contents
@@ -43,14 +48,17 @@ Impat Engine is a 2D Game Physics Engine written in C++ that provides robust phy
 ### Windows
 
 1. **Visual Studio 2022:**
+
    - Download and install [Visual Studio 2022](https://visualstudio.microsoft.com/vs/). During installation, ensure you select the **Desktop Development with C++** workload so that the Visual C++ compiler is installed.
 
 2. **Project Setup:**
+
    - You have two options:
      - **Option 1:** Download the complete Visual Studio project as provided.
      - **Option 2:** Create your own Visual Studio project and copy the `src`, `assets`, and `lib` folders into your project directory. Then add these folders to your project via the Visual Studio Solution Explorer.
 
 3. **SDL2 & SDL2_image:**
+
    - Download the development libraries for Visual C++ from:
      - [SDL2 Download](https://github.com/libsdl-org/SDL/releases)
      - [SDL2_image Download](https://github.com/libsdl-org/SDL_image/releases)
@@ -79,6 +87,7 @@ Impat Engine is a 2D Game Physics Engine written in C++ that provides robust phy
 1. **Install Dependencies:**
 
    Open your terminal and run:
+
    ```bash
    sudo apt update
    sudo apt install build-essential
@@ -90,11 +99,14 @@ Impat Engine is a 2D Game Physics Engine written in C++ that provides robust phy
 2. **Compile and Run:**
 
    Use the provided Makefile (or create one) to compile:
+
    ```bash
    make build
    make run
    ```
+
    Clean up with:
+
    ```bash
    make clean
    ```
@@ -106,6 +118,7 @@ Impat Engine is a 2D Game Physics Engine written in C++ that provides robust phy
 1. **Install Dependencies with Homebrew:**
 
    Open Terminal and run:
+
    ```bash
    brew update
    brew install sdl2
@@ -116,11 +129,14 @@ Impat Engine is a 2D Game Physics Engine written in C++ that provides robust phy
 2. **Compile and Run:**
 
    Use the provided Makefile to build and run the engine:
+
    ```bash
    make build
    make run
    ```
+
    Clean up with:
+
    ```bash
    make clean
    ```
@@ -130,6 +146,7 @@ Impat Engine is a 2D Game Physics Engine written in C++ that provides robust phy
 ## Usage
 
 Once built, the engine can be integrated into your game projects. The main executable launches a simulation where:
+
 - **Left Mouse Button:** Creates a dynamic circular body (with a basketball texture).
 - **Right Mouse Button:** Creates a box-shaped dynamic body (with a crate texture).
 - **Middle Mouse Button:** Creates a bowling-ball-like dynamic body.
@@ -150,6 +167,7 @@ Comprehensive documentation, including API references and examples, is available
 ## Contributing
 
 Contributions to the Impat Engine are welcome! If you’d like to report issues, suggest features, or submit pull requests, please follow our contribution guidelines:
+
 1. Fork the repository.
 2. Create a feature branch.
 3. Commit your changes.
