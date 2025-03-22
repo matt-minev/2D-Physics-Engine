@@ -24,7 +24,7 @@ void Application::Setup()
     Body* floor = new Body(BoxShape(Graphics::Width() - 50, 50), Graphics::Width() / 2.0, Graphics::Height() - 50, 0.0);
     Body* leftWall = new Body(BoxShape(50, Graphics::Height() - 100), 50, Graphics::Height() / 2.0 - 25, 0.0);
     Body* rightWall = new Body(BoxShape(50, Graphics::Height() - 100), Graphics::Width() - 50, Graphics::Height() / 2.0 - 25, 0.0);
-    floor->restitution = 0.5;
+    floor->restitution = 0.8;
     leftWall->restitution = 0.2;
     rightWall->restitution = 0.2;
     floor->SetTexture("./assets/metal.png");
@@ -34,13 +34,13 @@ void Application::Setup()
     world->AddBody(leftWall);
     world->AddBody(rightWall);
 
-    // Add a static box so other objects can collide
+    /*// Add a static box so other objects can collide
     Body* bigBox = new Body(BoxShape(200, 200), Graphics::Width() / 2.0, Graphics::Height() / 2.0, 0.0);
     bigBox->SetTexture("./assets/crate.png");
     bigBox->restitution = 0.7;
     bigBox->rotation = 1.4;
     bigBox->shape->UpdateVertices(bigBox->rotation, bigBox->position);
-    world->AddBody(bigBox);
+    world->AddBody(bigBox);*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,9 +66,9 @@ void Application::Input()
                 int x, y;
                 SDL_GetMouseState(&x, &y);
 
-                Body* ball = new Body(CircleShape(30), x, y, 1.0);
+                Body* ball = new Body(CircleShape(30), x, y, 0.62);
                 ball->SetTexture("./assets/basketball.png");
-                ball->restitution = 0.7;
+                ball->restitution = 0.75;
                 ball->friction = 0.1;
 
                 world->AddBody(ball);
@@ -79,11 +79,12 @@ void Application::Input()
                 int x, y;
                 SDL_GetMouseState(&x, &y);
 
-                Body* box = new Body(BoxShape(60, 60), x, y, 1.0);
-                box->SetTexture("./assets/crate.png");
-                box->restitution = 0.2;
+                Body* tennisBall = new Body(CircleShape(15), x, y, 0.058);
+                tennisBall->SetTexture("./assets/tennisball.png");
+                tennisBall->restitution = 0.85;
+                tennisBall->friction = 0.1;
 
-                world->AddBody(box);
+                world->AddBody(tennisBall);
             }
 
             if (event.button.button == SDL_BUTTON_MIDDLE)
@@ -91,12 +92,18 @@ void Application::Input()
                 int x, y;
                 SDL_GetMouseState(&x, &y);
 
-                Body* bowBall = new Body(CircleShape(25), x, y, 20.0);
-                bowBall->SetTexture("./assets/bowlingball.png");
-                bowBall->restitution = 0.1;
-                bowBall->friction = 0.1;
+                Body* ball = new Body(CircleShape(30), Graphics::Width() / 2.0, 100, 0.62);
+                ball->SetTexture("./assets/basketball.png");
+                ball->restitution = 0.75;
+                ball->friction = 0.1;
 
-                world->AddBody(bowBall);
+                Body* tennisBall = new Body(CircleShape(15), Graphics::Width() / 2.0 + 0.05, 50, 0.058);
+                tennisBall->SetTexture("./assets/tennisball.png");
+                tennisBall->restitution = 0.85;
+                tennisBall->friction = 0.1;
+
+                world->AddBody(ball);
+                world->AddBody(tennisBall);
             }
 
             break;
