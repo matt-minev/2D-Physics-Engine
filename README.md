@@ -184,4 +184,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgements
 
 - Special thanks to the teams behind [Box2D](https://box2d.org/) and [Chipmunk2D](https://chipmunk-physics.net/) for their invaluable contributions to the field of physics simulation.
-- Thanks to the SDL community for providing an excellent multimedia library.
+- Thanks to the SDL community for providing an excellent multimedia library!

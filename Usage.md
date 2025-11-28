@@ -251,7 +251,7 @@ The `Application` class orchestrates the overall simulation.
          SDL_Event event;
          while (SDL_PollEvent(&event)) {
              // Handle quit and key events
-             // For mouse clicks, get mouse coordinates and create new Body objects.
+             /// For mouse clicks, get mouse coordinates and create new Body objects.
          }
      }
      ```

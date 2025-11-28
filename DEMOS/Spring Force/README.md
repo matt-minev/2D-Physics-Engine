@@ -6,7 +6,7 @@
 
 # Information
 
-This demo showcases the spring force—a particle connected to a spring.
+This demo showcases the spring force — a particle connected to a spring.
 
 # Code
 
